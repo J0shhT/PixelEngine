@@ -7,6 +7,7 @@ Build_Test/
 # Pixel Engine files+folders
 Engine/Dependencies/
 PixelEngine.rar
+git_commit.bat
 
 # Visual studio folders
 [Dd]ebug/
