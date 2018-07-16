@@ -1,0 +1,36 @@
+
+# Build folders
+Build_LevelEditor/
+Build_SDK/
+Build_Test/
+
+# Pixel Engine files+folders
+Engine/Dependencies/
+PixelEngine.rar
+
+# Visual studio folders
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+.vs/
+
+# Visual studio files
+*.sln
+*.user
+*.filters
+*.vcxproj
+
+*.aps
+*.iit
+*.obj
+*.pdb
+*.idb
+*.res
+*.log
+
+*.rc
+!PixelEditor.rc

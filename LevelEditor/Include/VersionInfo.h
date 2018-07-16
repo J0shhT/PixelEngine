@@ -1,0 +1,5 @@
+#pragma once
+
+#define PIXEL_EDITOR_BUILD_VERSION "1.0.0.0"
+#define PIXEL_EDITOR_IS_DEV_BUILD
+
