@@ -11,39 +11,56 @@ namespace Pixel {
 	/**
 	*  TODO
 	*/
-	class PIXEL_API RenderService
+	class PIXEL_API RenderService final
 	{
+
+		PIXEL_DEFINE_SINGLETON(Pixel::RenderService);
+
 		public:
 
 			/**
 			*  Class constructor
-			*  This function can throw a Pixel::Exception::FatalError
 			*/
 			RenderService();
 
 			/**
 			*  Class deconstructor
 			*/
-			virtual ~RenderService();
+			~RenderService();
 
 			/**
-			*  Class singleton getter
-			*  This function can throw a Pixel::Exception::FatalError
+			*  TODO
 			*/
-			static Pixel::RenderService* Singleton();
-
 			void Initialize();
 
+			/**
+			*  TODO
+			*/
 			void SetupFrame();
 
+			/**
+			*  TODO
+			*/
 			void Clear();
 
+			/**
+			*  TODO
+			*/
 			void RenderWorldObjects(void);
 
+			/**
+			*  TODO
+			*/
 			void RenderSystemObjects();
 
+			/**
+			*  TODO
+			*/
 			void RenderScreenGuis(void);
 
+			/**
+			*  TODO
+			*/
 			void RenderSystemGuis();
 
 			/**
@@ -71,11 +88,7 @@ namespace Pixel {
 
 		private:
 
-			/**
-			*  The singleton instance for this class (only one Pixel::RenderService can exist)
-			*  See Pixel::RenderService::Singleton()
-			*/
-			static Pixel::RenderService* instance;
+			///todo: document these
 
 			SDL_GLContext _glContext;
 			Pixel::Type::Size _viewportSize;

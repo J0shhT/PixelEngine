@@ -4,11 +4,11 @@
 
 namespace Pixel {
 
+#pragma warning(push)
+#pragma warning(disable: 4251)
 	/**
 	*  Represents and contains a response from a web server
 	*/
-#pragma warning(push)
-#pragma warning(disable: 4251)
 	struct PIXEL_API HttpResponse
 	{
 		bool success; //* Set to true if the request was a success
@@ -35,31 +35,22 @@ namespace Pixel {
 	/**
 	*  TODO
 	*/
-	class PIXEL_API HttpService
+	class PIXEL_API HttpService final
 	{
+
+		PIXEL_DEFINE_SINGLETON(Pixel::HttpService);
+
 		public:
 
 			/**
 			*  Class constructor
-			*  This function can throw a Pixel::Exception::FatalError
 			*/
 			HttpService();
 
 			/**
 			*  Class deconstructor
 			*/
-			virtual ~HttpService();
-
-			/**
-			*  Class singleton getter
-			*  This function can throw a Pixel::Exception::FatalError
-			*/
-			static Pixel::HttpService* Singleton();
-
-			/**
-			*  TODO
-			*/
-			Pixel::URL GetInformationFromURL(std::string url);
+			~HttpService();
 
 			/**
 			*  Sends an HTTP GET request to the specified url
@@ -73,12 +64,6 @@ namespace Pixel {
 			Pixel::HttpResponse Post(std::string url, std::string &data);
 
 		private:
-
-			/**
-			*  The singleton instance for this class (only one Pixel:HttpService can exist)
-			*  See Pixel::HttpService::Singleton()
-			*/
-			static Pixel::HttpService* instance;
 
 			/**
 			*  Internal usage only

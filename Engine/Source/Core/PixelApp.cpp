@@ -1,22 +1,24 @@
 #include "Include/Core/PixelApp.h"
 
 #include "Include/PixelError.h"
+#include "Include/Core/SceneManager.h"
 #include "Include/Core/SelectionService.h"
 
 #include "Include/Graphics/RenderService.h"
 
 #include "Include/Network/HttpService.h"
 
+#undef CreateWindow
+
+PIXEL_DECLARE_SINGLETON(Pixel::App);
+
 Pixel::App::App()
 {
-	assert(Pixel::App::instance == nullptr);
-	if (Pixel::App::instance != nullptr)
-		throw Pixel::Exception::FatalError("Failed to create Pixel::App because a singleton instance already exists");
-
-	Pixel:App::instance = this;
+	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::App);
 
 	//Create singleton services
 	new Pixel::HttpService();
+	new Pixel::SceneManager();
 	new Pixel::RenderService();
 	new Pixel::SelectionService();
 }
@@ -24,22 +26,14 @@ Pixel::App::App()
 Pixel::App::~App()
 {
 	Close();
-	Pixel:App::instance = nullptr;
 
 	//Free singleton services
 	delete Pixel::SelectionService::Singleton();
 	delete Pixel::RenderService::Singleton();
+	delete Pixel::SceneManager::Singleton();
 	delete Pixel::HttpService::Singleton();
-}
 
-Pixel::App* Pixel::App::instance = nullptr;
-Pixel::App* Pixel::App::Singleton()
-{
-	assert(Pixel::App::instance != nullptr);
-	if (Pixel::App::instance == nullptr)
-		throw Pixel::Exception::FatalError("Failed to get Pixel::App singleton because instance does not exist");
-
-	return Pixel::App::instance;
+	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::App);
 }
 
 void Pixel::App::CreateWindow(std::string title, int width, int height)

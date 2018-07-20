@@ -32,6 +32,3 @@ x86/
 *.idb
 *.res
 *.log
-
-*.rc
-!PixelEditor.rc

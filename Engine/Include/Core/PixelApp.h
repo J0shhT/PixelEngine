@@ -7,6 +7,8 @@
 #include <SDL/SDL.h>
 #undef main
 
+#undef CreateWindow
+
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
@@ -17,11 +19,13 @@ namespace Pixel {
 	*/
 	class PIXEL_API App 
 	{
+
+		PIXEL_DEFINE_SINGLETON(Pixel::App);
+
 		public:
 
 			/**
 			*  Class constructor
-			*  This function can throw a Pixel::Exception::FatalError
 			*/
 			App();
 
@@ -29,12 +33,6 @@ namespace Pixel {
 			*  Class deconstructor
 			*/
 			virtual ~App();
-
-			/**
-			*  Class singleton getter
-			*  This function can throw a Pixel::Exception::FatalError
-			*/
-			static Pixel::App* Singleton();
 
 			/**
 			*  Creates a window for the Pixel::App
@@ -189,12 +187,6 @@ namespace Pixel {
 			double GetLastPhysicsFrameDelta() const;
 
 		private:
-
-			/**
-			*  The singleton instance for this class (only one Pixel:App can exist)
-			*  See Pixel::App::Singleton()
-			*/
-			static Pixel::App* instance;
 
 			/**
 			*  For internal usage to check whether or not a window has

@@ -6,26 +6,16 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+PIXEL_DECLARE_SINGLETON(Pixel::RenderService);
+
 Pixel::RenderService::RenderService()
 {
-	assert(Pixel::RenderService::instance == nullptr);
-	if (Pixel::RenderService::instance != nullptr)
-		throw Pixel::Exception::FatalError("Failed to create Pixel::RenderService because a singleton instance already exists");
-	Pixel:RenderService::instance = this;
+	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::RenderService);
 }
 
 Pixel::RenderService::~RenderService()
 {
-	Pixel:RenderService::instance = nullptr;
-}
-
-Pixel::RenderService* Pixel::RenderService::instance = nullptr;
-Pixel::RenderService* Pixel::RenderService::Singleton()
-{
-	assert(Pixel::RenderService::instance != nullptr);
-	if (Pixel::RenderService::instance == nullptr)
-		throw Pixel::Exception::FatalError("Failed to get Pixel::RenderService singleton because instance does not exist");
-	return Pixel::RenderService::instance;
+	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::RenderService);
 }
 
 void Pixel::RenderService::Initialize()

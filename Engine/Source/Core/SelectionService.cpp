@@ -3,26 +3,16 @@
 #include "Include/PixelError.h"
 #include "Include/Core/PixelApp.h"
 
+PIXEL_DECLARE_SINGLETON(Pixel::SelectionService);
+
 Pixel::SelectionService::SelectionService()
 {
-	assert(Pixel::SelectionService::instance == nullptr);
-	if (Pixel::SelectionService::instance != nullptr)
-		throw Pixel::Exception::FatalError("Failed to create Pixel::SelectionService because a singleton instance already exists");
-	Pixel:SelectionService::instance = this;
+	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::SelectionService);
 }
 
 Pixel::SelectionService::~SelectionService()
 {
-	Pixel:SelectionService::instance = nullptr;
-}
-
-Pixel::SelectionService* Pixel::SelectionService::instance = nullptr;
-Pixel::SelectionService* Pixel::SelectionService::Singleton()
-{
-	assert(Pixel::SelectionService::instance != nullptr);
-	if (Pixel::SelectionService::instance == nullptr)
-		throw Pixel::Exception::FatalError("Failed to get Pixel::SelectionService singleton because instance does not exist");
-	return Pixel::SelectionService::instance;
+	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::SelectionService);
 }
 
 void Pixel::SelectionService::SetSelection(void)
@@ -69,4 +59,3 @@ void Pixel::SelectionService::Duplicate()
 {
 
 }
-

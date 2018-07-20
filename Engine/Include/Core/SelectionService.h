@@ -17,26 +17,22 @@ namespace Pixel {
 	/**
 	*  TODO
 	*/
-	class PIXEL_API SelectionService
+	class PIXEL_API SelectionService final
 	{
+
+		PIXEL_DEFINE_SINGLETON(Pixel::SelectionService);
+
 		public:
 
 			/**
 			*  Class constructor
-			*  This function can throw a Pixel::Exception::FatalError
 			*/
 			SelectionService();
 
 			/**
 			*  Class deconstructor
 			*/
-			virtual ~SelectionService();
-
-			/**
-			*  Class singleton getter
-			*  This function can throw a Pixel::Exception::FatalError
-			*/
-			static Pixel::SelectionService* Singleton();
+			~SelectionService();
 
 			/**
 			*  Sets the current selection manually for the SelectionService.
@@ -97,14 +93,6 @@ namespace Pixel {
 			*  This function is the same as copy and pasting.
 			*/
 			void Duplicate(); ///TODO
-
-		private:
-
-			/**
-			*  The singleton instance for this class (only one Pixel::SelectionService can exist)
-			*  See Pixel::SelectionService::Singleton()
-			*/
-			static Pixel::SelectionService* instance;
 	};
 
 }
