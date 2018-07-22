@@ -11,9 +11,6 @@
 #define PixelPrint(msg) Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Message, msg);
 #define PixelPrintf(msg, ...) Pixel::StandardOut::Singleton()->Printf(Pixel::OutputType::Message, msg, __VA_ARGS__);
 
-#define PixelAppend(msg) Pixel::StandardOut::Singleton()->Append(Pixel::OutputType::Message, msg);
-#define PixelAppendf(msg, ...) Pixel::StandardOut::Singleton()->Appendf(Pixel::OutputType::Message, msg, __VA_ARGS__);
-
 #define PixelPrintln() Pixel::StandardOut::Singleton()->Println();
 
 namespace Pixel {
@@ -51,13 +48,6 @@ namespace Pixel {
 			~StandardOut();
 
 			/**
-			*  Appends the specified message to std::cout and formats the text
-			in the console with color depending on what is specified for messageType.
-			*  See StandardOut::Print() for automatic new lines.
-			*/
-			void Append(Pixel::OutputType messageType, const char* message);
-
-			/**
 			*  Prints the specified message to std::cout and formats the text
 			in the console with color depending on what is specified for messageType.
 			*  New lines are automatically added at the end of the message.
@@ -69,15 +59,6 @@ namespace Pixel {
 			*  Prints a blank line to std::cout
 			*/
 			void Println();
-
-			/**
-			*  Appends the specified format formatted with the given additional
-			arguments to std::cout and formats the text in the console with color 
-			depending on what is specified for messageType.
-			*  Appends are limited to 2048 characters at once with this function.
-			*  See StandardOut::Printf() for automatic new lines.
-			*/
-			void Appendf(Pixel::OutputType messageType, const char* format, ...);
 
 			/**
 			*  Prints the specified format formatted with the given additional

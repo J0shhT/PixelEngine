@@ -1,6 +1,7 @@
 #pragma once
 
 #define PIXEL_ENGINE
+#define PIXEL_ENGINE_VERSION "1.0.0.0"
 
 //DLL export/import defines
 
@@ -80,12 +81,18 @@
 	className::instance = this; \
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE); \
 	SetConsoleTextAttribute(consoleHandle, 11); \
-	std::cout << STRINGIFY(className) "() - Created " << this << std::endl; \
+	std::ostringstream __creationMessage; \
+	__creationMessage << STRINGIFY(className) "() - Created " << this; \
+	std::cout << __creationMessage.str() << std::endl; \
+	Pixel::LogService::Singleton()->Log(this, __creationMessage.str()); \
 	SetConsoleTextAttribute(consoleHandle, 15);
 
 #define PIXEL_SINGLETON_DECONSTRUCTOR(className) \
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE); \
 	SetConsoleTextAttribute(consoleHandle, 11); \
-	std::cout << STRINGIFY(className) "() - Destroyed " << this << std::endl; \
+	std::ostringstream __creationMessage; \
+	__creationMessage << STRINGIFY(className) "() - Destroyed " << this; \
+	std::cout << __creationMessage.str() << std::endl; \
+	Pixel::LogService::Singleton()->Log(this, __creationMessage.str()); \
 	SetConsoleTextAttribute(consoleHandle, 15); \
 	className::instance = nullptr;

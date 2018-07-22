@@ -3,6 +3,7 @@
 #include "Include/PixelError.h"
 #include "Include/Core/SceneManager.h"
 #include "Include/Core/SelectionService.h"
+#include "Include/Core/LogService.h"
 
 #include "Include/Graphics/RenderService.h"
 
@@ -14,6 +15,8 @@ PIXEL_DECLARE_SINGLETON(Pixel::App);
 
 Pixel::App::App()
 {
+	Pixel::LogService::Singleton();
+
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::App);
 
 	//Create singleton services
@@ -34,6 +37,8 @@ Pixel::App::~App()
 	delete Pixel::HttpService::Singleton();
 
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::App);
+
+	Pixel::LogService::Singleton()->UploadLogs();
 }
 
 void Pixel::App::CreateWindow(std::string title, int width, int height)

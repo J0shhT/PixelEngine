@@ -2,6 +2,8 @@
 
 #include "Include/Common.h"
 
+#include "Include/Core/LogService.h"
+
 #define	PIXEL_SUCCESS			0x0
 #define	PIXEL_ERROR				0x1
 #define	PIXEL_ERROR_UNKNOWN		0x2
