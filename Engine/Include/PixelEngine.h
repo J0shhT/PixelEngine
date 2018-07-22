@@ -12,6 +12,7 @@
 
 /* Graphics */
 #include "Include/Graphics/RenderService.h"
+#include "Include/Graphics/Shader.h"
 
 /* Physics */
 //todo
@@ -24,6 +25,8 @@
 
 /* Object */
 #include "Include/Object/Object.h"
+#include "Include/Object/RenderableObject.h"
+#include "Include/Object/PhysicalObject.h"
 
 /* Type */
 #include "Include/Type/Position.h"

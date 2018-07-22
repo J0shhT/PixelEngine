@@ -2,8 +2,8 @@
 
 #include "Include/Common.h"
 
-#define PixelLog(msg) Pixel::LogService::Singleton()->Log(msg);
 #define PixelLog(p, msg) Pixel::LogService::Singleton()->Log((void*)p, msg);
+#define PixelLogMsg(msg) Pixel::LogService::Singleton()->Log(msg);
 #define PixelLogThis(msg) Pixel::LogService::Singleton()->Log((void*)this, msg);
 
 namespace Pixel {

@@ -1,6 +1,7 @@
 #include "Include/Graphics/RenderService.h"
 
 #include "Include/PixelError.h"
+#include "Include/PixelOutput.h"
 #include "Include/Core/PixelApp.h"
 
 #include <GL/glew.h>
@@ -81,6 +82,60 @@ void Pixel::RenderService::RenderSystemGuis()
 	for (auto iter = fpsCounterText.begin(); iter != fpsCounterText.end(); iter++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
 	}
+}
+
+void Pixel::RenderService::AddShader(std::shared_ptr<Pixel::Graphics::Shader> shader)
+{
+	if (_isShadersLinked)
+		throw Pixel::Exception::RuntimeError("RenderService::AddShader() - Cannot add shader because shaders are already linked");
+
+	if (!shader->IsLoaded())
+		throw Pixel::Exception::RuntimeError("RenderService::AddShader() - Cannot add shader because shader is not loaded \"" + shader->GetFilePath() + "\"");
+
+	_shaders[shader->GetShaderId()] = shader;
+}
+
+void Pixel::RenderService::LinkShaders()
+{
+	if (_isShadersLinked)
+		throw Pixel::Exception::RuntimeError("RenderService::LinkShaders() - Cannot link shaders because the shaders are already linked");
+
+	_glProgram = glCreateProgram();
+
+	for (auto iter = _shaders.begin(); iter != _shaders.end(); iter++)
+	{
+		std::shared_ptr<Pixel::Graphics::Shader> shader = iter->second;
+
+		//Attach shader
+		glAttachShader(_glProgram, shader->GetShaderId());
+	}
+
+	//Link shaders
+	glLinkProgram(_glProgram);
+
+	//Check errors
+	GLint linkStatus;
+	glGetProgramiv(_glProgram, GL_LINK_STATUS, &linkStatus);
+	if (linkStatus == GL_TRUE)
+	{
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "RenderService::LinkShaders() - Linked shaders successfully");
+	}
+	else
+	{
+		GLint maxLength;
+		glGetProgramiv(_glProgram, GL_INFO_LOG_LENGTH, &maxLength);
+		std::vector<GLchar> errorLog(maxLength);
+		glGetProgramInfoLog(_glProgram, maxLength, &maxLength, &errorLog[0]);
+		std::stringstream errorLogStream;
+		for (auto iter = errorLog.begin(); iter != errorLog.end(); iter++)
+		{
+			errorLogStream << *iter;
+		}
+		glDeleteProgram(_glProgram);
+		throw Pixel::Exception::RuntimeError("RenderService::LinkShaders() - Failed to link shaders: " + errorLogStream.str());
+	}
+
+	_shaders.clear();
 }
 
 void Pixel::RenderService::SetWireframeEnabled(bool enabled)

@@ -14,6 +14,10 @@
 
 #define PIXEL_OBJECT_DECONSTRUCTOR(className)
 
+#define PIXEL_DEFINE_OBJECT(className) \
+	public: \
+		const char* GetType() const noexcept;
+
 #define PIXEL_DECLARE_OBJECT(className) \
 	const char* Pixel::Object::className::GetType() const noexcept \
 	{ \

@@ -9,6 +9,7 @@ namespace Pixel::Editor
 	{
 		public:
 			virtual bool OnInit();
+			virtual int OnExit();
 	};
 
 	class CoreWindow : public wxFrame

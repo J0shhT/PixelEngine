@@ -1,9 +1,8 @@
+#include <PixelEngine.h>
+
 #include "Include/Windows/GraphicsCanvas.h"
 
-#include <GL/glut.h>
 #include <wx/app.h>
-
-#include <PixelEngine.h>
 
 #include "Include/Windows/PixelEditor.h"
 #include "Include/Enums.h"

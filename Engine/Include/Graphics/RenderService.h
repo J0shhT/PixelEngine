@@ -4,6 +4,8 @@
 
 #include "Include/Type/Size.h"
 
+#include "Include/Graphics/Shader.h"
+
 #include <SDL/SDL.h>
 
 namespace Pixel {
@@ -64,6 +66,16 @@ namespace Pixel {
 			void RenderSystemGuis();
 
 			/**
+			*  TODO
+			*/
+			void AddShader(std::shared_ptr<Pixel::Graphics::Shader>);
+
+			/**
+			*  TODO
+			*/
+			void LinkShaders();
+
+			/**
 			*  Sets whether or not the render system will render vertices in wireframe
 			*  This does not effect GUI elements or system objects
 			*/
@@ -90,6 +102,9 @@ namespace Pixel {
 
 			///todo: document these
 
+			std::map<GLuint, std::shared_ptr<Pixel::Graphics::Shader>> _shaders;
+			bool _isShadersLinked;
+			GLuint _glProgram;
 			SDL_GLContext _glContext;
 			Pixel::Type::Size _viewportSize;
 			Pixel::Type::Size _aspectRatio;

@@ -18,7 +18,7 @@ namespace Pixel {
 	/**
 	*  TODO
 	*/
-	enum OutputType
+	enum class OutputType
 	{
 		Error, //* Results in red text in the output
 		Warning, //* Results in yellow text in the output

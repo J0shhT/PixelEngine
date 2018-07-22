@@ -47,6 +47,12 @@ bool Pixel::Editor::App::OnInit()
 	return true;
 }
 
+int Pixel::Editor::App::OnExit()
+{
+	delete Pixel::App::Singleton();
+	return 0;
+}
+
 
 #define PIXEL_WINDOW_WIDTH 815
 #define PIXEL_WINDOW_HEIGHT 732
