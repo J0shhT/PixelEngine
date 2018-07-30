@@ -30,10 +30,7 @@ bool Pixel::Editor::App::OnInit()
 	}
 	catch (Pixel::Exception::FatalError)
 	{
-		return false;
-	}
-	catch (Pixel::Exception::RuntimeError)
-	{
+		Pixel::LogService::Singleton()->UploadLogs(Pixel::LogType::CrashLog);
 		return false;
 	}
 

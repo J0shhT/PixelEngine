@@ -33,6 +33,20 @@
 #include "Include/Type/Size.h"
 #include "Include/Type/WorldPosition.h"
 
+/* Entry point macro */
+#define PixelMain(func) \
+	int main() { \
+		try \
+		{ \
+			func ## (); \
+		} \
+		catch (Pixel::Exception::FatalError e) \
+		{ \
+			Pixel::LogService::Singleton()->UploadLogs(Pixel::LogType::CrashLog); \
+			return 1; \
+		} \
+		return 0; \
+	}
 
 /* Helper macros */
 

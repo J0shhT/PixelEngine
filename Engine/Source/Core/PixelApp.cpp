@@ -16,6 +16,7 @@ PIXEL_DECLARE_SINGLETON(Pixel::App);
 Pixel::App::App()
 {
 	Pixel::LogService::Singleton();
+	Pixel::StandardOut::Singleton();
 
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::App);
 
@@ -44,9 +45,15 @@ Pixel::App::~App()
 void Pixel::App::CreateWindow(std::string title, int width, int height)
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot create window because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::CreateWindow() - Cannot create window because external windowing system is enabled");
+		return;
+	}
 	if (_hasWindow || _window != nullptr)
-		throw Pixel::Exception::RuntimeError("A window is already created for this Pixel::App");
+	{
+		PixelError("App::CreateWindow() - A window is already created");
+		return;
+	}
 
 	_windowTitle = title;
 	_windowWidth = width;
@@ -61,11 +68,11 @@ void Pixel::App::CreateWindow(std::string title, int width, int height)
 	{
 		if (SDL_Init(SDL_INIT_VIDEO) == 0)
 		{
-			//todo: print info message
+			Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "App::CreateWindow() - SDL video subsystem initialized");
 		}
 		else
 		{
-			throw Pixel::Exception::FatalError("SDL video subsystem initialization failed");
+			PixelFatalError("SDL video subsystem initialization failed");
 		}
 	}
 	//Create SDL window
@@ -79,24 +86,39 @@ void Pixel::App::CreateWindow(std::string title, int width, int height)
 	);
 	if (_window != NULL)
 	{
-		//todo: print info message
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "App::CreateWindow() - SDL window created");
 		_hasWindow = true;
 	}
 	else
 	{
-		throw Pixel::Exception::FatalError("SDL window creation failed");
+		PixelFatalError("SDL window creation failed");
 	}
 
 	//Initialize GLContext
-	Pixel::RenderService::Singleton()->SetGLContext(SDL_GL_CreateContext(_window));
+	SDL_GLContext glContext = SDL_GL_CreateContext(_window);
+	if (glContext != NULL)
+	{
+		Pixel::RenderService::Singleton()->SetGLContext(glContext);
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "App::CreateWindow() - OpenGL context created");
+	}
+	else
+	{
+		PixelFatalError("OpenGL context creation failed");
+	}
 }
 
 void Pixel::App::DestroyWindow()
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot destroy window because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::DestroyWindow() - Cannot destroy window because external windowing system is enabled");
+		return;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot destroy window because no window exists for this Pixel::App");
+	{
+		PixelError("App::DestroyWindow() - Cannot destroy window because no window exists");
+		return;
+	}
 
 	SDL_DestroyWindow(_window);
 	_hasWindow = false;
@@ -131,7 +153,10 @@ void Pixel::App::StepPhysics()
 void Pixel::App::Render()
 {
 	if (_window == nullptr && !_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot render because no window exists for this Pixel::App");
+	{
+		PixelFatalError("App::Render() - Cannot render because no window exists");
+		return;
+	}
 
 	static Pixel::RenderService* renderService = Pixel::RenderService::Singleton();
 
@@ -198,9 +223,15 @@ void Pixel::App::Close()
 void Pixel::App::SetWindowTitle(std::string title)
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot set window title because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::SetWindowTitle() - Cannot set window title because external windowing system is enabled");
+		return;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot set window title because no window exists for this Pixel::App");
+	{
+		PixelError("App::SetWindowTitle() - Cannot set window title because no window exists");
+		return;
+	}
 
 	SDL_SetWindowTitle(_window, title.c_str());
 	_windowTitle = title;
@@ -209,9 +240,15 @@ void Pixel::App::SetWindowTitle(std::string title)
 void Pixel::App::SetWindowSize(int width, int height)
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot set window size because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::SetWindowSize() - Cannot set window size because external windowing system is enabled");
+		return;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot set window size because no window exists for this Pixel::App");
+	{
+		PixelError("App::SetWindowSize() - Cannot set window size because no window exists");
+		return;
+	}
 
 	_windowWidth = width;
 	_windowHeight = height;
@@ -221,9 +258,15 @@ void Pixel::App::SetWindowSize(int width, int height)
 void Pixel::App::SetWindowWidth(int value)
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot set window width because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::SetWindowWidth() - Cannot set window width because external windowing system is enabled");
+		return;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot set window width because no window exists for this Pixel::App");
+	{
+		PixelError("App::SetWindowWidth() - Cannot set window width because no window exists"); 
+		return;
+	}
 
 	SetWindowSize(value, _windowHeight);
 }
@@ -231,9 +274,15 @@ void Pixel::App::SetWindowWidth(int value)
 void Pixel::App::SetWindowHeight(int value)
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot set window height because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::SetWindowHeight() - Cannot set window height because external windowing system is enabled");
+		return;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot set window height because no window exists for this Pixel::App");
+	{
+		PixelError("App::SetWindowHeight() - Cannot set window height because no window exists");
+		return;
+	}
 
 	SetWindowSize(_windowWidth, value);
 }
@@ -241,9 +290,14 @@ void Pixel::App::SetWindowHeight(int value)
 void Pixel::App::SetWindowVisible(bool value)
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot set window visibility because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::SetWindowVisible() - Cannot set window visibility because external windowing system is enabled");
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot set window visibility because no window exists for this Pixel::App");
+	{
+		PixelError("App::SetWindowVisible() - Cannot set window visibility because no window exists");
+		return;
+	}
 
 	if (value)
 	{
@@ -269,9 +323,15 @@ void Pixel::App::UseExternalWindowSystem(bool enabled)
 int Pixel::App::GetWindowPositionX() const
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot get window position (x) because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::GetWindowPositionX() - Cannot get window position because external windowing system is enabled");
+		return 0;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot get window position (x) because no window exists for this Pixel::App");
+	{
+		PixelError("App::GetWindowPositionX() - Cannot get window position because no window exists");
+		return 0;
+	}
 
 	int value;
 	SDL_GetWindowPosition(_window, &value, nullptr);
@@ -281,9 +341,15 @@ int Pixel::App::GetWindowPositionX() const
 int Pixel::App::GetWindowPositionY() const
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot get window position (y) because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::GetWindowPositionY() - Cannot get window position because external windowing system is enabled");
+		return 0;
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot get window position (y) because no window exists for this Pixel::App");
+	{
+		PixelError("App::GetWindowPositionY() - Cannot get window position because no window exists");
+		return 0;
+	}
 
 	int value;
 	SDL_GetWindowPosition(_window, nullptr, &value);
@@ -293,9 +359,15 @@ int Pixel::App::GetWindowPositionY() const
 Pixel::Type::Position Pixel::App::GetWindowPosition() const
 {
 	if (_isUsingExternalWindowSystem)
-		throw Pixel::Exception::RuntimeError("Cannot get window position because this Pixel::App is using an external windowing system");
+	{
+		PixelError("App::GetWindowPosition() - Cannot get window position because external windowing system is enabled");
+		return Pixel::Type::Position(0.0);
+	}
 	if (_window == nullptr)
-		throw Pixel::Exception::RuntimeError("Cannot get window position because no window exists for this Pixel::App");
+	{
+		PixelError("App::GetWindowPosition() - Cannot get window position because no window exists");
+		return Pixel::Type::Position(0.0);
+	}
 
 	int posX;
 	int posY;

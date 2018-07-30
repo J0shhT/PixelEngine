@@ -23,11 +23,11 @@ void Pixel::RenderService::Initialize()
 {
 	if (glewInit() == GLEW_OK)
 	{
-		//todo: print info message
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "RenderService::Initialize() - GLEW initialized");
 	}
 	else
 	{
-		throw Pixel::Exception::FatalError(std::string("GLEW initialization failed (error ") + std::to_string(glewInit()) + std::string(")"));
+		PixelFatalError("GLEW initialization failed (error " + std::to_string(glewInit()) + std::string(")"));
 	}
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -87,10 +87,16 @@ void Pixel::RenderService::RenderSystemGuis()
 void Pixel::RenderService::AddShader(std::shared_ptr<Pixel::Graphics::Shader> shader)
 {
 	if (_isShadersLinked)
-		throw Pixel::Exception::RuntimeError("RenderService::AddShader() - Cannot add shader because shaders are already linked");
+	{
+		PixelError("RenderService::AddShader() - Cannot add shader because shaders are already linked");
+		return;
+	}
 
 	if (!shader->IsLoaded())
-		throw Pixel::Exception::RuntimeError("RenderService::AddShader() - Cannot add shader because shader is not loaded \"" + shader->GetFilePath() + "\"");
+	{
+		PixelError("RenderService::AddShader() - Cannot add shader because shader is not loaded \"" + shader->GetFilePath() + "\"");
+		return;
+	}
 
 	_shaders[shader->GetShaderId()] = shader;
 }
@@ -98,7 +104,10 @@ void Pixel::RenderService::AddShader(std::shared_ptr<Pixel::Graphics::Shader> sh
 void Pixel::RenderService::LinkShaders()
 {
 	if (_isShadersLinked)
-		throw Pixel::Exception::RuntimeError("RenderService::LinkShaders() - Cannot link shaders because the shaders are already linked");
+	{
+		PixelError("RenderService::LinkShaders() - Cannot link shaders because the shaders are already linked");
+		return;
+	}
 
 	_glProgram = glCreateProgram();
 
@@ -132,7 +141,7 @@ void Pixel::RenderService::LinkShaders()
 			errorLogStream << *iter;
 		}
 		glDeleteProgram(_glProgram);
-		throw Pixel::Exception::RuntimeError("RenderService::LinkShaders() - Failed to link shaders: " + errorLogStream.str());
+		PixelFatalError("RenderService::LinkShaders() - Failed to link shaders: " + errorLogStream.str());
 	}
 
 	_shaders.clear();

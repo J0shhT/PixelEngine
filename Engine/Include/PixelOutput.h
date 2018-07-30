@@ -2,12 +2,6 @@
 
 #include "Common.h"
 
-#define PixelError(msg) Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Error, msg);
-#define PixelErrorf(msg, ...) Pixel::StandardOut::Singleton()->Printf(Pixel::OutputType::Error, msg, __VA_ARGS__);
-
-#define PixelWarn(msg) Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Warning, msg);
-#define PixelWarnf(msg, ...) Pixel::StandardOut::Singleton()->Printf(Pixel::OutputType::Warning, msg, __VA_ARGS__);
-
 #define PixelPrint(msg) Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Message, msg);
 #define PixelPrintf(msg, ...) Pixel::StandardOut::Singleton()->Printf(Pixel::OutputType::Message, msg, __VA_ARGS__);
 
@@ -56,6 +50,11 @@ namespace Pixel {
 			void Print(Pixel::OutputType messageType, const char* message);
 
 			/**
+			*  Does the same as Print(), but does not log the message to LogService
+			*/
+			void PrintSilent(Pixel::OutputType messageType, const char* message);
+
+			/**
 			*  Prints a blank line to std::cout
 			*/
 			void Println();
@@ -69,6 +68,11 @@ namespace Pixel {
 			*  See StandardOut::Appendf() for no new lines at the end.
 			*/
 			void Printf(Pixel::OutputType messageType, const char* format, ...);
+
+			/**
+			*  Does the same as Printf(), but does not log the message to LogService
+			*/
+			void PrintfSilent(Pixel::OutputType messageType, const char* format, ...);
 
 		private:
 

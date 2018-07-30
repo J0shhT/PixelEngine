@@ -89,7 +89,7 @@ Pixel::HttpResponse Pixel::HttpService::Get(std::string url)
 		}
 		else
 		{
-			throw Pixel::Exception::RuntimeError(std::string("curl_easy_perform() failed: ") + std::string(curl_easy_strerror(code)));
+			PixelError("HttpService::Get() - curl_easy_perform() failed (" + std::string(curl_easy_strerror(code)) + ")");
 		}
 
 		curl_easy_cleanup(curl);
@@ -169,7 +169,7 @@ Pixel::HttpResponse Pixel::HttpService::Post(std::string url, std::string &data)
 		}
 		else
 		{
-			throw Pixel::Exception::RuntimeError(std::string("curl_easy_perform() failed: ") + std::string(curl_easy_strerror(code)));
+			PixelError("HttpService::Post() - curl_easy_perform() failed (" + std::string(curl_easy_strerror(code)) + ")");
 		}
 
 		curl_easy_cleanup(curl);
