@@ -32,12 +32,17 @@ namespace Pixel {
 			/**
 			*  TODO
 			*/
-			std::shared_ptr<Pixel::Object::Object> GetObjectById(const std::string&);
+			const std::map<std::string, std::shared_ptr<Pixel::Object::Object>>& GetObjects() const;
 
 			/**
 			*  TODO
 			*/
-			std::shared_ptr<Pixel::Object::Object> GetObjectByName(const std::string&);
+			std::shared_ptr<Pixel::Object::Object> GetObjectById(const std::string&) const;
+
+			/**
+			*  TODO
+			*/
+			//std::shared_ptr<Pixel::Object::Object> GetObjectByName(const std::string&) const;
 
 			/**
 			*  TODO

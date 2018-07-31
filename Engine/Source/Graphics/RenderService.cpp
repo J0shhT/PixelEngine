@@ -4,6 +4,10 @@
 #include "Include/PixelOutput.h"
 #include "Include/Core/PixelApp.h"
 
+#include "Include/Object/RenderableObject.h"
+
+#include "Include/Core/SceneManager.h"
+
 #include <GL/glew.h>
 #include <GL/glut.h>
 
@@ -21,6 +25,11 @@ Pixel::RenderService::~RenderService()
 
 void Pixel::RenderService::Initialize()
 {
+	if (IsInitialized())
+	{
+		PixelWarning("RenderService::Initialize() - RenderService is already initialized");
+		return;
+	}
 	if (glewInit() == GLEW_OK)
 	{
 		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "RenderService::Initialize() - GLEW initialized");
@@ -29,9 +38,35 @@ void Pixel::RenderService::Initialize()
 	{
 		PixelFatalError("GLEW initialization failed (error " + std::to_string(glewInit()) + std::string(")"));
 	}
+
+	/* Load engine vertex shader */
+	auto vertexShader = Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType::VertexShader);
+	vertexShader->Load("J:/PixelEngine/Dev/Build_Release/Shaders/Vertex.glsl");
+	AddShader(vertexShader);
+
+	/* Load engine fragment shader */
+	auto fragmentShader = Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType::FragmentShader);
+	fragmentShader->Load("J:/PixelEngine/Dev/Build_Release/Shaders/Fragment.glsl");
+	AddShader(fragmentShader);
+
+	//Link shaders
+	LinkShaders();
+
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glCreateVertexArrays(1, &_glVertexArrays);
+	glBindVertexArray(_glVertexArrays);
+	glUseProgram(_glProgram);
+
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	//gluOrtho2D(-(float)_viewportSize.GetWidth() / (float)_viewportSize.GetHeight(), (float)_viewportSize.GetWidth() / (float)_viewportSize.GetHeight(), -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+
+	_projectionMatrix = glm::ortho(0.0f, (float)_viewportSize.GetWidth(), (float)_viewportSize.GetHeight(), 0.0f);
+	_isInitialized = true;
 }
 
 void Pixel::RenderService::SetupFrame()
@@ -53,9 +88,22 @@ void Pixel::RenderService::Clear()
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 }
 
-void Pixel::RenderService::RenderWorldObjects(void)
+void Pixel::RenderService::RenderWorldObjects()
 {
-
+	glUseProgram(_glProgram);
+	auto gameObjects = Pixel::SceneManager::Singleton()->GetObjects();
+	for (auto iter = gameObjects.cbegin(); iter != gameObjects.cend(); ++iter)
+	{
+		std::shared_ptr<Pixel::Object::Object> object = iter->second;
+		if (object->IsA<Pixel::Object::RenderableObject>())
+		{
+			std::shared_ptr<Pixel::Object::RenderableObject> renderableObject = std::dynamic_pointer_cast<Pixel::Object::RenderableObject>(object);
+			object.reset();
+			renderableObject->Render();
+			renderableObject.reset();
+		}
+	}
+	glUseProgram(0);
 }
 
 void Pixel::RenderService::RenderSystemObjects()
@@ -63,23 +111,28 @@ void Pixel::RenderService::RenderSystemObjects()
 
 }
 
-void Pixel::RenderService::RenderScreenGuis(void)
+void Pixel::RenderService::RenderScreenGuis()
 {
 
 }
 
 void Pixel::RenderService::RenderSystemGuis()
 {
+	glUseProgram(0);
+	glLoadIdentity();
 	double lastPhysicsFrameDelta = Pixel::App::Singleton()->GetLastPhysicsFrameDelta();
+
 	glColor3f(1.0f, 0.0f, 1.0f);
-	glRasterPos2f(-0.97, 0.87f);
-	std::string frameDeltaSecText = std::to_string(lastPhysicsFrameDelta) + std::string("s");
-	for (auto iter = frameDeltaSecText.begin(); iter != frameDeltaSecText.end(); iter++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
-	}
-	glRasterPos2f(-0.97, 0.93f);
+
+	glRasterPos2f(-0.98, 0.93f);
 	std::string fpsCounterText = std::to_string(static_cast<int>(1.0 / lastPhysicsFrameDelta)) + std::string(" FPS");
 	for (auto iter = fpsCounterText.begin(); iter != fpsCounterText.end(); iter++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
+	}
+
+	glRasterPos2f(-0.98, 0.87f);
+	std::string frameDeltaSecText = std::to_string(lastPhysicsFrameDelta) + std::string("s");
+	for (auto iter = frameDeltaSecText.begin(); iter != frameDeltaSecText.end(); iter++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
 	}
 }
@@ -165,5 +218,20 @@ void Pixel::RenderService::SetAspectRatio(int width, int height)
 void Pixel::RenderService::SetGLContext(SDL_GLContext context)
 {
 	_glContext = context;
+}
+
+bool Pixel::RenderService::IsInitialized() const
+{
+	return _isInitialized;
+}
+
+GLuint Pixel::RenderService::GetProgram() const
+{
+	return _glProgram;
+}
+
+glm::mat4 Pixel::RenderService::GetProjectionMatrix() const
+{
+	return _projectionMatrix;
 }
 

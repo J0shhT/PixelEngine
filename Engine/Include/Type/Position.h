@@ -101,7 +101,7 @@ namespace Pixel::Type
 			/**
 			*  Less-than-or-equal-to comparison operator overload
 			*  This compares if the magnitude of the left is less than *or* equal to the magnitude of the right
-			*  This is true if the > comparison comparison evaluates to true
+			*  This is true if the > comparison evaluates to true
 			*/
 			bool operator<=(const Pixel::Type::Position&) const;
 

@@ -17,6 +17,8 @@ enum
 	ID_CoreWindow_Delete,
 	ID_CoreWindow_Duplicate,
 
+	ID_CoreWindow_DevTest_RandomRect,
+
 	ID_GraphicsCanvas,
 
 	ID_ToolsPanel_RibbonPage,

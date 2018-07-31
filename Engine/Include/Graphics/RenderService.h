@@ -7,6 +7,8 @@
 #include "Include/Graphics/Shader.h"
 
 #include <SDL/SDL.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 namespace Pixel {
 
@@ -98,17 +100,38 @@ namespace Pixel {
 			*/
 			void SetGLContext(SDL_GLContext);
 
+			/**
+			*  TODO
+			*/
+			bool IsInitialized() const;
+
+			/**
+			*  TODO
+			*/
+			GLuint GetProgram() const;
+
+			/**
+			*  TODO
+			*/
+			glm::mat4 GetProjectionMatrix() const;
+
 		private:
 
 			///todo: document these
 
 			std::map<GLuint, std::shared_ptr<Pixel::Graphics::Shader>> _shaders;
 			bool _isShadersLinked;
+
 			GLuint _glProgram;
+			GLuint _glVertexArrays;
 			SDL_GLContext _glContext;
+
+			glm::mat4 _projectionMatrix;
+
 			Pixel::Type::Size _viewportSize;
 			Pixel::Type::Size _aspectRatio;
 			bool _wireframeEnabled = false;
+			bool _isInitialized = false;
 	};
 
 }

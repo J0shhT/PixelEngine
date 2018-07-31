@@ -26,6 +26,8 @@ namespace Pixel::Editor
 			void OnFileExit(wxCommandEvent& event);
 			void OnHelpAbout(wxCommandEvent& event);
 
+			void OnDevTestRandomRect(wxCommandEvent& event);
+
 			wxDECLARE_EVENT_TABLE();
 	};
 

@@ -161,8 +161,10 @@ void Pixel::App::Render()
 	static Pixel::RenderService* renderService = Pixel::RenderService::Singleton();
 
 	static bool hasInitialized = false;
-	if (!hasInitialized) {
-		renderService->Initialize();
+	if (!hasInitialized)
+	{
+		if (!renderService->IsInitialized())
+			renderService->Initialize();
 		hasInitialized = true;
 	}
 

@@ -20,7 +20,12 @@ Pixel::SceneManager::~SceneManager()
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::SceneManager);
 }
 
-std::shared_ptr<Pixel::Object::Object> Pixel::SceneManager::GetObjectById(const std::string &id)
+const std::map<std::string, std::shared_ptr<Pixel::Object::Object>>& Pixel::SceneManager::GetObjects() const
+{
+	return _objects;
+}
+
+std::shared_ptr<Pixel::Object::Object> Pixel::SceneManager::GetObjectById(const std::string &id) const
 {
 	if (_objects.count(id) > 0)
 	{

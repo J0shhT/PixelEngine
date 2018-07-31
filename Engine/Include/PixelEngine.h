@@ -27,11 +27,14 @@
 #include "Include/Object/Object.h"
 #include "Include/Object/RenderableObject.h"
 #include "Include/Object/PhysicalObject.h"
+#include "Include/Object/Rectangle.h"
 
 /* Type */
 #include "Include/Type/Position.h"
 #include "Include/Type/Size.h"
 #include "Include/Type/WorldPosition.h"
+#include "Include/Type/Velocity.h"
+#include "Include/Type/Color.h"
 
 /* Entry point macro */
 #define PixelMain(func) \
@@ -49,6 +52,12 @@
 	}
 
 /* Helper macros */
+
+/**
+*  Argument 1: The object classname to create that is inside the namespace Pixel::Object
+*  Returns a shared_ptr to the object created
+*/
+#define PixelCreateObject(type) Pixel::SceneManager::Singleton()->CreateObject<Pixel::Object:: ## type>();
 
 /**
 *  Argument 1: shared_ptr to a class that inherits from Pixel::Object::Object

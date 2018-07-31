@@ -42,6 +42,11 @@ bool Pixel::Object::PhysicalObject::IsSolid() const
 	return _isSolid;
 }
 
+Pixel::Type::Color Pixel::Object::PhysicalObject::GetColor() const
+{
+	return _color;
+}
+
 void Pixel::Object::PhysicalObject::SetPosition(Pixel::Type::WorldPosition value)
 {
 	_position = value;
@@ -65,4 +70,9 @@ void Pixel::Object::PhysicalObject::SetAnchored(bool value)
 void Pixel::Object::PhysicalObject::SetSolid(bool value)
 {
 	_isSolid = value;
+}
+
+void Pixel::Object::PhysicalObject::SetColor(Pixel::Type::Color value)
+{
+	_color = value;
 }

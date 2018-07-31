@@ -8,6 +8,8 @@
 #include "Include/Windows/GraphicsCanvas.h"
 #include "Include/Panels/ToolsPanel.h"
 
+#include <random>
+
 wxBEGIN_EVENT_TABLE(Pixel::Editor::CoreWindow, wxFrame)
 	//File Menu
 	EVT_MENU(ID_CoreWindow_NewLevel, Pixel::Editor::CoreWindow::OnFileNew)
@@ -18,6 +20,8 @@ wxBEGIN_EVENT_TABLE(Pixel::Editor::CoreWindow, wxFrame)
 	EVT_MENU(wxID_EXIT, Pixel::Editor::CoreWindow::OnFileExit)
 	//Help Menu
 	EVT_MENU(wxID_ABOUT, Pixel::Editor::CoreWindow::OnHelpAbout)
+	//DevTest Menu
+	EVT_MENU(ID_CoreWindow_DevTest_RandomRect, Pixel::Editor::CoreWindow::OnDevTestRandomRect)
 wxEND_EVENT_TABLE();
 
 bool Pixel::Editor::App::OnInit()
@@ -171,12 +175,22 @@ Pixel::Editor::CoreWindow::CoreWindow()
 	menuHelp->Append(menuHelp_About);
 	////////////////////////////////////////////////////////////
 
+	// DevTest Dropdown Menu //////////////////////////////////////
+	wxMenu *menuDevTest = new wxMenu;
+
+	//DevTest -> Generate Random Rectangle
+	wxMenuItem *menuDevTest_RandomRect = new wxMenuItem(menuDevTest, ID_CoreWindow_DevTest_RandomRect, "&Generate Random Rectangle\tCtrl+T");
+	//menuDevTest_RandomRect->SetBitmap(wxBITMAP_PNG(UI_ICON_ABOUT));
+	menuDevTest->Append(menuDevTest_RandomRect);
+	////////////////////////////////////////////////////////////
+
 
 	/* Create and append items to menu bar */
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "&File");
 	menuBar->Append(menuEdit, "&Edit");
 	menuBar->Append(menuHelp, "&Help");
+	menuBar->Append(menuDevTest, "&DevTest");
 	SetMenuBar(menuBar);
 
 	/* Ribbon bar */
@@ -240,4 +254,17 @@ void Pixel::Editor::CoreWindow::OnHelpAbout(wxCommandEvent & event)
 		"Build date: " __DATE__ " @ " __TIME__,
 		"About Pixel Editor", wxOK | wxICON_INFORMATION
 	);
+}
+
+void Pixel::Editor::CoreWindow::OnDevTestRandomRect(wxCommandEvent& event)
+{
+	std::random_device seeder;
+	std::mt19937 engine(seeder());
+	std::uniform_real_distribution<> dist(0, 1);
+
+	auto rectangle = PixelCreateObject(Rectangle);
+
+	rectangle->SetColor(PixelColor(dist(engine), dist(engine), dist(engine)));
+	rectangle->SetSize(PixelSize(100.0, 100.0));
+	rectangle->SetPosition(PixelWorldPosition(rand() % 700, rand() % 500));
 }

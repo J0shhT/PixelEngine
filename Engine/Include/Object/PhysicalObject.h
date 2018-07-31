@@ -7,6 +7,7 @@
 #include "Include/Type/WorldPosition.h"
 #include "Include/Type/Size.h"
 #include "Include/Type/Velocity.h"
+#include "Include/Type/Color.h"
 
 namespace Pixel::Object {
 
@@ -58,7 +59,7 @@ namespace Pixel::Object {
 			/**
 			*  TODO
 			*/
-			//Pixel::Type::Color GetColor() const;
+			Pixel::Type::Color GetColor() const;
 
 			/**
 			*  TODO
@@ -88,7 +89,7 @@ namespace Pixel::Object {
 			/**
 			*  TODO
 			*/
-			//void SetColor(Pixel::Type::Color);
+			void SetColor(Pixel::Type::Color);
 
 			/**
 			*  TODO
@@ -102,7 +103,7 @@ namespace Pixel::Object {
 			Pixel::Type::Velocity _velocity;
 			bool _isAnchored;
 			bool _isSolid;
-			//Pixel::Type::Color _color;
+			Pixel::Type::Color _color;
 
 			bool _hasCollisionTop;
 			bool _hasCollisionBottom;
