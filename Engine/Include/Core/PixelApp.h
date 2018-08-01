@@ -181,11 +181,6 @@ namespace Pixel {
 			*/
 			bool CloseRequested() const;
 
-			/**
-			*  TODO
-			*/
-			double GetLastPhysicsFrameDelta() const;
-
 		private:
 
 			/**
@@ -230,7 +225,6 @@ namespace Pixel {
 
 			bool _closeRequested = false;
 			bool _autoGameLoop = false;
-			double _lastPhysicsFrameDelta = 0.0;
 			bool _debugGuiEnabled = false;
 			bool _isUsingExternalWindowSystem = false;
 

@@ -4,6 +4,8 @@
 
 #include "Include/Graphics/RenderService.h"
 
+#include "Include/Core/SceneManager.h"
+
 PIXEL_DECLARE_OBJECT(Rectangle);
 
 Pixel::Object::Rectangle::Rectangle()
@@ -18,7 +20,41 @@ Pixel::Object::Rectangle::~Rectangle()
 
 void Pixel::Object::Rectangle::StepPhysics(double frameDelta)
 {
+	if (IsAnchored())
+		return;
+	Pixel::Type::Velocity velocity = GetVelocity();
+	Pixel::Type::Position position = GetPosition();
+	if (velocity.GetMagnitude() != 0.0)
+	{
+		double xPosition = position.GetX();
+		double yPosition = position.GetY();
+		double xVelocity = velocity.GetX();
+		double yVelocity = velocity.GetY();
 
+		//Collision check
+		///todo: move all collision detection into PhysicsService?
+		_checkCollisions();
+		if (_hasCollisionTop && yVelocity < 0.0)
+		{
+			yVelocity = 0.0;
+		}
+		if (_hasCollisionBottom && yVelocity > 0.0)
+		{
+			yVelocity = 0.0;
+		}
+		if (_hasCollisionLeft && xVelocity < 0.0)
+		{
+			xVelocity = 0.0;
+		}
+		if (_hasCollisionRight && xVelocity > 0.0)
+		{
+			xVelocity = 0.0;
+		}
+
+		//Update object position
+		//position = position + velocity * frameDelta
+		SetPosition(Pixel::Type::WorldPosition(xPosition + xVelocity * frameDelta, yPosition - yVelocity * frameDelta));
+	}
 }
 
 void Pixel::Object::Rectangle::Render()
@@ -117,5 +153,86 @@ void Pixel::Object::Rectangle::Render()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	//glDisableVertexAttribArray(2);
+}
+
+void Pixel::Object::Rectangle::_checkCollisions()
+{
+	bool hasCollisionTop = false;
+	bool hasCollisionBottom = false;
+	bool hasCollisionRight = false;
+	bool hasCollisionLeft = false;
+
+	auto gameObjects = Pixel::SceneManager::Singleton()->GetObjects();
+	for (auto iter = gameObjects.cbegin(); iter != gameObjects.cend(); iter++)
+	{
+		if (iter->second->IsA<Pixel::Object::PhysicalObject>())
+		{
+			std::shared_ptr<Pixel::Object::PhysicalObject> physicsObject = std::dynamic_pointer_cast<Pixel::Object::PhysicalObject>(iter->second);
+			if (physicsObject->IsSolid() && GetId() != physicsObject->GetId())
+			{
+				//Construct bounding box
+				struct AABB {
+					double x1;
+					double x2;
+					double y1;
+					double y2;
+				} a, b;
+				a.x1 = GetPosition().GetX();
+				a.x2 = GetPosition().GetX() + GetSize().GetWidth();
+				a.y1 = GetPosition().GetY();
+				a.y2 = GetPosition().GetY() + GetSize().GetHeight();
+				b.x1 = physicsObject->GetPosition().GetX();
+				b.x2 = physicsObject->GetPosition().GetX() + physicsObject->GetSize().GetWidth();
+				b.y1 = physicsObject->GetPosition().GetY();
+				b.y2 = physicsObject->GetPosition().GetY() + physicsObject->GetSize().GetHeight();
+
+				//Overlap test
+				bool isTouching = false;
+				if (a.x2 >= b.x1 && a.x1 <= b.x2)
+				{
+					if (a.y2 >= b.y1 && a.y1 <= b.y2)
+					{
+						isTouching = true;
+					}
+				}
+
+				//Determine touched side
+				if (isTouching)
+				{
+					//Side clamp
+					double clampToRightJump = abs(a.x1 - b.x2);
+					double clampToLeftJump = abs(a.x2 - b.x1);
+					double clampToTopJump = abs(a.y2 - b.y1);
+					double clampToBottomJump = abs(a.y1 - b.y2);
+					auto clampJumps = { clampToRightJump, clampToLeftJump, clampToTopJump, clampToBottomJump };
+					if ((std::min)(clampJumps) == clampToRightJump)
+					{
+						_position.SetX(b.x2);
+						hasCollisionLeft = true;
+					}
+					else if ((std::min)(clampJumps) == clampToLeftJump)
+					{
+						_position.SetX(b.x1 - this->GetSize().GetWidth());
+						hasCollisionRight = true;
+					}
+					else if ((std::min)(clampJumps) == clampToTopJump)
+					{
+						_position.SetY(b.y1 - this->GetSize().GetHeight());
+						hasCollisionTop = true;
+					}
+					else if ((std::min)(clampJumps) == clampToBottomJump)
+					{
+						_position.SetY(b.y2);
+						hasCollisionBottom = true;
+					}
+				}
+			}
+		}
+	}
+
+	_hasCollisionTop = hasCollisionTop;
+	_hasCollisionBottom = hasCollisionBottom;
+	_hasCollisionLeft = hasCollisionLeft;
+	_hasCollisionRight = hasCollisionRight;
 }
 

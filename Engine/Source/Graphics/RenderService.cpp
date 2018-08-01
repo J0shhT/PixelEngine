@@ -8,6 +8,8 @@
 
 #include "Include/Core/SceneManager.h"
 
+#include "Include/Physics/PhysicsService.h"
+
 #include <GL/glew.h>
 #include <GL/glut.h>
 
@@ -120,7 +122,7 @@ void Pixel::RenderService::RenderSystemGuis()
 {
 	glUseProgram(0);
 	glLoadIdentity();
-	double lastPhysicsFrameDelta = Pixel::App::Singleton()->GetLastPhysicsFrameDelta();
+	double lastPhysicsFrameDelta = Pixel::PhysicsService::Singleton()->GetLastPhysicsFrameDelta();
 
 	glColor3f(1.0f, 0.0f, 1.0f);
 

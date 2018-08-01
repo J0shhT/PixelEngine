@@ -37,7 +37,7 @@ namespace Pixel::Object {
 
 		protected:
 
-
+			void _checkCollisions();
 
 	};
 

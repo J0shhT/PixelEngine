@@ -10,6 +10,7 @@ Pixel::Object::PhysicalObject::PhysicalObject()
 	_position = Pixel::Type::WorldPosition(0.0);
 	_size = Pixel::Type::Size(100.0);
 	_isSolid = true;
+	_isAnchored = false;
 }
 
 Pixel::Object::PhysicalObject::~PhysicalObject()

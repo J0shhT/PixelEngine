@@ -110,6 +110,8 @@ namespace Pixel::Object {
 			bool _hasCollisionLeft;
 			bool _hasCollisionRight;
 
+			virtual void _checkCollisions() = 0;
+
 	};
 
 }

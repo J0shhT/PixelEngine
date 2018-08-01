@@ -7,6 +7,8 @@
 
 #include "Include/Graphics/RenderService.h"
 
+#include "Include/Physics/PhysicsService.h"
+
 #include "Include/Network/HttpService.h"
 
 #undef CreateWindow
@@ -23,6 +25,7 @@ Pixel::App::App()
 	//Create singleton services
 	new Pixel::HttpService();
 	new Pixel::SceneManager();
+	new Pixel::PhysicsService();
 	new Pixel::RenderService();
 	new Pixel::SelectionService();
 }
@@ -34,6 +37,7 @@ Pixel::App::~App()
 	//Free singleton services
 	delete Pixel::SelectionService::Singleton();
 	delete Pixel::RenderService::Singleton();
+	delete Pixel::PhysicsService::Singleton();
 	delete Pixel::SceneManager::Singleton();
 	delete Pixel::HttpService::Singleton();
 
@@ -141,13 +145,10 @@ void Pixel::App::ProcessEvents()
 
 void Pixel::App::StepPhysics()
 {
-	using namespace std::chrono;
-	static auto frameLast = high_resolution_clock::now();
-	auto frameNow = high_resolution_clock::now();
-	double frameDelta = static_cast<double>(duration_cast<microseconds>(frameNow - frameLast).count()) / 1000000.0;
-	frameLast = high_resolution_clock::now();
-	_lastPhysicsFrameDelta = frameDelta;
-	//todo
+	static Pixel::PhysicsService* physicsService = Pixel::PhysicsService::Singleton();
+	physicsService->TimeFrame();
+	physicsService->SimulateGameObjects();
+	physicsService->SimulateSystemObjects();
 }
 
 void Pixel::App::Render()
@@ -381,9 +382,4 @@ Pixel::Type::Position Pixel::App::GetWindowPosition() const
 bool Pixel::App::CloseRequested() const
 {
 	return _closeRequested;
-}
-
-double Pixel::App::GetLastPhysicsFrameDelta() const
-{
-	return _lastPhysicsFrameDelta;
 }
