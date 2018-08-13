@@ -4,6 +4,7 @@
 #include "Include/Core/SceneManager.h"
 #include "Include/Core/SelectionService.h"
 #include "Include/Core/LogService.h"
+#include "Include/Core/UserInputService.h"
 
 #include "Include/Graphics/RenderService.h"
 
@@ -15,7 +16,7 @@
 
 PIXEL_DECLARE_SINGLETON(Pixel::App);
 
-Pixel::App::App()
+Pixel::App::App(Pixel::WindowSubsystem subsystem) : _subsystem(subsystem)
 {
 	Pixel::LogService::Singleton();
 	Pixel::StandardOut::Singleton();
@@ -24,6 +25,7 @@ Pixel::App::App()
 
 	//Create singleton services
 	new Pixel::HttpService();
+	new Pixel::UserInputService();
 	new Pixel::SceneManager();
 	new Pixel::PhysicsService();
 	new Pixel::RenderService();
@@ -39,6 +41,7 @@ Pixel::App::~App()
 	delete Pixel::RenderService::Singleton();
 	delete Pixel::PhysicsService::Singleton();
 	delete Pixel::SceneManager::Singleton();
+	delete Pixel::UserInputService::Singleton();
 	delete Pixel::HttpService::Singleton();
 
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::App);
@@ -48,11 +51,12 @@ Pixel::App::~App()
 
 void Pixel::App::CreateWindow(std::string title, int width, int height)
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::CreateWindow() - Cannot create window because external windowing system is enabled");
+		PixelError("App::CreateWindow() - This function can only be used with the SDL window subsystem");
 		return;
 	}
+
 	if (_hasWindow || _window != nullptr)
 	{
 		PixelError("App::CreateWindow() - A window is already created");
@@ -109,15 +113,23 @@ void Pixel::App::CreateWindow(std::string title, int width, int height)
 	{
 		PixelFatalError("OpenGL context creation failed");
 	}
+
+	//Obtain SDL system info
+	SDL_VERSION(&_SDLSysInfo.version);
+	if (SDL_GetWindowWMInfo(_window, &_SDLSysInfo) == SDL_FALSE)
+	{
+		PixelFatalError("Failed to initialize SDL window system information");
+	}
 }
 
 void Pixel::App::DestroyWindow()
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::DestroyWindow() - Cannot destroy window because external windowing system is enabled");
+		PixelError("App::DestroyWindow() - This function can only be used with the SDL window subsystem");
 		return;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::DestroyWindow() - Cannot destroy window because no window exists");
@@ -131,15 +143,23 @@ void Pixel::App::DestroyWindow()
 
 void Pixel::App::ProcessEvents()
 {
-	SDL_Event e;
-	while (SDL_PollEvent(&e))
+	Pixel::UserInputService::Singleton()->Update();
+	if (IsSDL())
 	{
-		switch (e.type)
+		SDL_Event e;
+		while (SDL_PollEvent(&e))
 		{
+			switch (e.type)
+			{
 			case SDL_QUIT:
 				_closeRequested = true;
 				break;
+			}
 		}
+	}
+	else if (IsWxWidgets())
+	{
+
 	}
 }
 
@@ -153,7 +173,7 @@ void Pixel::App::StepPhysics()
 
 void Pixel::App::Render()
 {
-	if (_window == nullptr && !_isUsingExternalWindowSystem)
+	if (_window == nullptr && IsSDL())
 	{
 		PixelFatalError("App::Render() - Cannot render because no window exists");
 		return;
@@ -181,7 +201,7 @@ void Pixel::App::Render()
 		renderService->RenderSystemGuis();
 	}
 
-	if (!_isUsingExternalWindowSystem)
+	if (IsSDL())
 		SDL_GL_SwapWindow(_window);
 }
 
@@ -214,7 +234,7 @@ void Pixel::App::StopGameLoop()
 
 void Pixel::App::Close()
 {
-	if (!_isUsingExternalWindowSystem)
+	if (IsSDL())
 	{
 		if (_hasWindow)
 			DestroyWindow();
@@ -225,11 +245,12 @@ void Pixel::App::Close()
 
 void Pixel::App::SetWindowTitle(std::string title)
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::SetWindowTitle() - Cannot set window title because external windowing system is enabled");
+		PixelError("App::SetWindowTitle() - This function can only be used with the SDL window subsystem");
 		return;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::SetWindowTitle() - Cannot set window title because no window exists");
@@ -242,11 +263,12 @@ void Pixel::App::SetWindowTitle(std::string title)
 
 void Pixel::App::SetWindowSize(int width, int height)
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::SetWindowSize() - Cannot set window size because external windowing system is enabled");
+		PixelError("App::SetWindowSize() - This function can only be used with the SDL window subsystem");
 		return;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::SetWindowSize() - Cannot set window size because no window exists");
@@ -260,11 +282,12 @@ void Pixel::App::SetWindowSize(int width, int height)
 
 void Pixel::App::SetWindowWidth(int value)
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::SetWindowWidth() - Cannot set window width because external windowing system is enabled");
+		PixelError("App::SetWindowWidth() - This function can only be used with the SDL window subsystem");
 		return;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::SetWindowWidth() - Cannot set window width because no window exists"); 
@@ -276,11 +299,12 @@ void Pixel::App::SetWindowWidth(int value)
 
 void Pixel::App::SetWindowHeight(int value)
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::SetWindowHeight() - Cannot set window height because external windowing system is enabled");
+		PixelError("App::SetWindowHeight() - This function can only be used with the SDL window subsystem");
 		return;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::SetWindowHeight() - Cannot set window height because no window exists");
@@ -292,10 +316,12 @@ void Pixel::App::SetWindowHeight(int value)
 
 void Pixel::App::SetWindowVisible(bool value)
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::SetWindowVisible() - Cannot set window visibility because external windowing system is enabled");
+		PixelError("App::SetWindowVisible() - This function can only be used with the SDL window subsystem");
+		return;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::SetWindowVisible() - Cannot set window visibility because no window exists");
@@ -318,18 +344,14 @@ void Pixel::App::SetDebugGuiEnabled(bool enabled)
 	_debugGuiEnabled = enabled;
 }
 
-void Pixel::App::UseExternalWindowSystem(bool enabled)
-{
-	_isUsingExternalWindowSystem = enabled;
-}
-
 int Pixel::App::GetWindowPositionX() const
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::GetWindowPositionX() - Cannot get window position because external windowing system is enabled");
+		PixelError("App::GetWindowPositionX() - This function can only be used with the SDL window subsystem");
 		return 0;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::GetWindowPositionX() - Cannot get window position because no window exists");
@@ -343,11 +365,12 @@ int Pixel::App::GetWindowPositionX() const
 
 int Pixel::App::GetWindowPositionY() const
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::GetWindowPositionY() - Cannot get window position because external windowing system is enabled");
+		PixelError("App::GetWindowPositionY() - This function can only be used with the SDL window subsystem");
 		return 0;
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::GetWindowPositionY() - Cannot get window position because no window exists");
@@ -361,11 +384,12 @@ int Pixel::App::GetWindowPositionY() const
 
 Pixel::Type::Position Pixel::App::GetWindowPosition() const
 {
-	if (_isUsingExternalWindowSystem)
+	if (!IsSDL())
 	{
-		PixelError("App::GetWindowPosition() - Cannot get window position because external windowing system is enabled");
+		PixelError("App::GetWindowPosition() - This function can only be used with the SDL window subsystem");
 		return Pixel::Type::Position(0.0);
 	}
+
 	if (_window == nullptr)
 	{
 		PixelError("App::GetWindowPosition() - Cannot get window position because no window exists");
@@ -379,7 +403,45 @@ Pixel::Type::Position Pixel::App::GetWindowPosition() const
 	return position;
 }
 
+int Pixel::App::GetWindowWidth() const
+{
+	return _windowWidth;
+}
+
+int Pixel::App::GetWindowHeight() const
+{
+	return _windowHeight;
+}
+
 bool Pixel::App::CloseRequested() const
 {
 	return _closeRequested;
+}
+
+Pixel::WindowSubsystem Pixel::App::GetWindowSubsystem() const
+{
+	return _subsystem;
+}
+
+bool Pixel::App::IsSDL() const
+{
+	return (GetWindowSubsystem() == Pixel::WindowSubsystem::SDL);
+}
+
+bool Pixel::App::IsWxWidgets() const
+{
+	return (GetWindowSubsystem() == Pixel::WindowSubsystem::WxWidgets);
+}
+
+HWND Pixel::App::GetWindowHandle() const
+{
+	if (IsSDL())
+	{
+		return _SDLSysInfo.info.win.window;
+	}
+	else if (IsWxWidgets())
+	{
+		//todo
+		return HWND();
+	}
 }

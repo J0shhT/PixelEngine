@@ -10,6 +10,21 @@
 
 #include <random>
 
+void TestInputFunction(const Pixel::InputEvent& e)
+{
+	if (e.key == Pixel::Key::KeySpace)
+	{
+		wxMessageBox("Space was pressed!");
+	}
+}
+void MouseClickEvent(const Pixel::InputEvent& e)
+{
+	wxMessageBox("Mouse clicked! (" + std::to_string(e.mouseX) + ", " + std::to_string(e.mouseY) + ")");
+}
+
+#define PIXEL_WINDOW_WIDTH 815
+#define PIXEL_WINDOW_HEIGHT 732
+
 wxBEGIN_EVENT_TABLE(Pixel::Editor::CoreWindow, wxFrame)
 	//File Menu
 	EVT_MENU(ID_CoreWindow_NewLevel, Pixel::Editor::CoreWindow::OnFileNew)
@@ -28,8 +43,7 @@ bool Pixel::Editor::App::OnInit()
 {
 	//Create Pixel::App (required for Pixel Engine)
 	try {
-		Pixel::App* app = new Pixel::App();
-		app->UseExternalWindowSystem(true);
+		Pixel::App* app = new Pixel::App(Pixel::WindowSubsystem::WxWidgets);
 		app->SetDebugGuiEnabled(true);
 	}
 	catch (Pixel::Exception::FatalError)
@@ -45,6 +59,9 @@ bool Pixel::Editor::App::OnInit()
 	Pixel::Editor::CoreWindow *mainWindow = new Pixel::Editor::CoreWindow();
 	mainWindow->Show(true);
 
+	Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::MouseDown, &MouseClickEvent);
+	Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::KeyDown, &TestInputFunction);
+
 	return true;
 }
 
@@ -53,10 +70,6 @@ int Pixel::Editor::App::OnExit()
 	delete Pixel::App::Singleton();
 	return 0;
 }
-
-
-#define PIXEL_WINDOW_WIDTH 815
-#define PIXEL_WINDOW_HEIGHT 732
 
 Pixel::Editor::CoreWindow::CoreWindow()
 	: wxFrame(NULL, ID_CoreWindow, "Pixel Editor", wxDefaultPosition, wxSize(PIXEL_WINDOW_WIDTH, PIXEL_WINDOW_HEIGHT), 

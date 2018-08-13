@@ -5,6 +5,7 @@
 #include "Include/Type/Position.h"
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_syswm.h>
 #undef main
 
 #undef CreateWindow
@@ -13,6 +14,15 @@
 #pragma warning(disable: 4251)
 
 namespace Pixel {
+
+	/**
+	*  TODO
+	*/
+	enum class WindowSubsystem
+	{
+		SDL,
+		WxWidgets
+	};
 
 	/**
 	*  TODO
@@ -27,7 +37,7 @@ namespace Pixel {
 			/**
 			*  Class constructor
 			*/
-			App();
+			App(Pixel::WindowSubsystem subsystem = Pixel::WindowSubsystem::SDL);
 
 			/**
 			*  Class deconstructor
@@ -142,19 +152,6 @@ namespace Pixel {
 			void SetDebugGuiEnabled(bool);
 
 			/**
-			*  Set this to true if you do not want Pixel Engine
-			to do the window handling for the application.
-			*  This will require you to do all window creating
-			and management yourself.
-			*  When set to true, certain windowing related functions
-			for Pixel Engine will throw Pixel::Exception::RuntimeError
-			*  This function can allow you to use a different windowing
-			library like wxWidgets with Pixel Engine if you know what
-			you are doing of course.
-			*/
-			void UseExternalWindowSystem(bool);
-
-			/**
 			*  Gets the X position of the window for the Pixel::App
 			*  This function can throw a Pixel::Exception::RuntimeError
 			if there is no current window associated with the app.
@@ -176,12 +173,54 @@ namespace Pixel {
 			Pixel::Type::Position GetWindowPosition() const;
 
 			/**
+			*  Gets the width of the window for the Pixel::App
+			*  This function can throw a Pixel::Exception::RuntimeError
+			if there is no current window associated with the app.
+			*/
+			int GetWindowWidth() const;
+
+			/**
+			*  Gets the height of the window for the Pixel::App
+			*  This function can throw a Pixel::Exception::RuntimeError
+			if there is no current window associated with the app.
+			*/
+			int GetWindowHeight() const;
+
+			/**
 			*  Returns whether or not the user has requested for
 			the application to close.
 			*/
 			bool CloseRequested() const;
 
+			/**
+			*  Returns the windowing subsystem currently being used.
+			*/
+			Pixel::WindowSubsystem GetWindowSubsystem() const;
+
+			/**
+			*  Returns whether or not the windowing subsystem is set to SDL.
+			*/
+			bool IsSDL() const;
+
+			/**
+			*  Returns whether or not the windowing subsystem is set to WxWidgets.
+			*/
+			bool IsWxWidgets() const;
+
+			/**
+			*  Returns the window handle for the window for the Pixel::App
+			*/
+			HWND GetWindowHandle() const;
+
 		private:
+
+			/**
+			*  The windowing subsystem to be used by the engine.
+			*  The window subsystem is set via a parameter in the constructor
+			of Pixel::App, the default is SDL.
+			*  See Pixel::WindowSubsystem enum for available subsystems.
+			*/
+			Pixel::WindowSubsystem _subsystem;
 
 			/**
 			*  For internal usage to check whether or not a window has
@@ -221,12 +260,29 @@ namespace Pixel {
 			SDL_Window* _window = nullptr;
 
 
-			///todo: document these
+			/**
+			*  A SDL_SysWMinfo struct containing SDL info (internal usage only)
+			*/
+			SDL_SysWMinfo _SDLSysInfo;
 
+			/**
+			*  Whether or not the game was requested to be closed
+			either via the user or an internal function call
+			*/
 			bool _closeRequested = false;
+
+			/**
+			*  Whether or not the engine is currently running the
+			premade game loop (internal usage only)
+			*  See Pixel::App::StartGameLoop()
+			*/
 			bool _autoGameLoop = false;
+
+			/**
+			*  Whether or not to display debug information on screen
+			*  See Pixel::App::SetDebugGuiEnabled()
+			*/
 			bool _debugGuiEnabled = false;
-			bool _isUsingExternalWindowSystem = false;
 
 	};
 
