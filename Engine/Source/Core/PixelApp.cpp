@@ -141,30 +141,25 @@ void Pixel::App::DestroyWindow()
 	_window = nullptr;
 }
 
+void Pixel::App::SetWxWidgetsWindow(wxWindow* window)
+{
+	window->GetSize(&_windowWidth, &_windowHeight);
+	_wxWindow = window;
+}
+
 void Pixel::App::ProcessEvents()
 {
-	Pixel::UserInputService::Singleton()->Update();
-	if (IsSDL())
-	{
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
-		{
-			switch (e.type)
-			{
-			case SDL_QUIT:
-				_closeRequested = true;
-				break;
-			}
-		}
-	}
-	else if (IsWxWidgets())
-	{
+	if (_closeRequested)
+		return;
 
-	}
+	Pixel::UserInputService::Singleton()->Update();
 }
 
 void Pixel::App::StepPhysics()
 {
+	if (_closeRequested)
+		return;
+
 	static Pixel::PhysicsService* physicsService = Pixel::PhysicsService::Singleton();
 	physicsService->TimeFrame();
 	physicsService->SimulateGameObjects();
@@ -173,6 +168,9 @@ void Pixel::App::StepPhysics()
 
 void Pixel::App::Render()
 {
+	if (_closeRequested)
+		return;
+
 	if (_window == nullptr && IsSDL())
 	{
 		PixelFatalError("App::Render() - Cannot render because no window exists");
@@ -207,6 +205,9 @@ void Pixel::App::Render()
 
 void Pixel::App::UpdateSound()
 {
+	if (_closeRequested)
+		return;
+
 	//todo
 }
 
@@ -234,6 +235,8 @@ void Pixel::App::StopGameLoop()
 
 void Pixel::App::Close()
 {
+	_closeRequested = true;
+	StopGameLoop();
 	if (IsSDL())
 	{
 		if (_hasWindow)
@@ -441,7 +444,6 @@ HWND Pixel::App::GetWindowHandle() const
 	}
 	else if (IsWxWidgets())
 	{
-		//todo
-		return HWND();
+		return (HWND)_wxWindow->GetHandle();
 	}
 }

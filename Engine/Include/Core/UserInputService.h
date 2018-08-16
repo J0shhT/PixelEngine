@@ -67,6 +67,11 @@ namespace Pixel {
 			/**
 			*  TODO
 			*/
+			void PollWxWidgets();
+
+			/**
+			*  TODO
+			*/
 			std::string Bind(InputEventType, InputEventCallback*);
 
 			/**
@@ -78,9 +83,24 @@ namespace Pixel {
 
 			struct InputListener;
 
+			void _callConnectedCallbacks(Pixel::InputEventType, Pixel::InputEvent&);
+
+			//Mouse event signalers
+			void _signalMouseMove(unsigned int mouseX, unsigned int mouseY);
+			void _signalMouseDown(Pixel::MouseButton);
+			void _signalMouseUp(Pixel::MouseButton);
+
+			//Keyboard event signalers
+			void _signalKeyDown(Pixel::Key);
+			void _signalKeyUp(Pixel::Key);
+
+			//Gamepad event signalers
+			void _signalGamepadDown(Pixel::GamepadButton);
+			void _signalGamepadUp(Pixel::GamepadButton);
+
+			//Gainput device event signalers (SDL mode only)
 			void _signalDeviceButtonDown(gainput::DeviceId device, gainput::DeviceButtonId deviceButton);
 			void _signalDeviceButtonUp(gainput::DeviceId device, gainput::DeviceButtonId deviceButton);
-			void _signalMouseMove(unsigned int mouseX, unsigned int mouseY);
 
 			std::map<InputEventType, std::map<std::string, InputEventCallback*>> _connectedCallbacks;
 

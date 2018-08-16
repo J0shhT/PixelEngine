@@ -10,16 +10,9 @@
 
 #include <random>
 
-void TestInputFunction(const Pixel::InputEvent& e)
-{
-	if (e.key == Pixel::Key::KeySpace)
-	{
-		wxMessageBox("Space was pressed!");
-	}
-}
 void MouseClickEvent(const Pixel::InputEvent& e)
 {
-	wxMessageBox("Mouse clicked! (" + std::to_string(e.mouseX) + ", " + std::to_string(e.mouseY) + ")");
+	PixelPrintf("Mouse clicked! (button %d) (%d, %d)", e.mouseButton, e.mouseX, e.mouseY);
 }
 
 #define PIXEL_WINDOW_WIDTH 815
@@ -45,23 +38,23 @@ bool Pixel::Editor::App::OnInit()
 	try {
 		Pixel::App* app = new Pixel::App(Pixel::WindowSubsystem::WxWidgets);
 		app->SetDebugGuiEnabled(true);
+
+		//Create PNG handler (for using wxBitmap with PNG files)
+		wxImage::AddHandler(new wxPNGHandler);
+
+		//Create main editor window
+		Pixel::Editor::CoreWindow *mainWindow = new Pixel::Editor::CoreWindow();
+		mainWindow->Show(true);
+
+		app->SetWxWidgetsWindow(mainWindow);
+
+		Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::MouseDown, &MouseClickEvent);
 	}
 	catch (Pixel::Exception::FatalError)
 	{
 		Pixel::LogService::Singleton()->UploadLogs(Pixel::LogType::CrashLog);
 		return false;
 	}
-
-	//Create PNG handler (for using wxBitmap with PNG files)
-	wxImage::AddHandler(new wxPNGHandler);
-
-	//Create main editor window
-	Pixel::Editor::CoreWindow *mainWindow = new Pixel::Editor::CoreWindow();
-	mainWindow->Show(true);
-
-	Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::MouseDown, &MouseClickEvent);
-	Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::KeyDown, &TestInputFunction);
-
 	return true;
 }
 

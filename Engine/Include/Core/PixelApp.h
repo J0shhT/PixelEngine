@@ -4,6 +4,8 @@
 
 #include "Include/Type/Position.h"
 
+#include <wx/wx.h>
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 #undef main
@@ -59,6 +61,14 @@ namespace Pixel {
 			if there is no current window associated with the app.
 			*/
 			void DestroyWindow();
+
+			/**
+			*  Sets the main wxWindow used for this program.
+			*  This must be properly set for certain events to work in Pixel Engine.
+			*  This function should only be used if you are using the
+			wxWidgets windowing subsystem.
+			*/
+			void SetWxWidgetsWindow(wxWindow*);
 
 			/**
 			*  Processes all events for this Pixel::App
@@ -254,11 +264,16 @@ namespace Pixel {
 			bool _isWindowVisible = false;
 
 			/**
+			*  A pointer to the wxWindow object (internal usage only)
+			*  See Pixel::App::SetWxWidgetsWindow()
+			*/
+			wxWindow* _wxWindow = nullptr;
+
+			/**
 			*  A pointer to the SDL_Window object (internal usage only)
 			*  See Pixel::App::CreateWindow()
 			*/
 			SDL_Window* _window = nullptr;
-
 
 			/**
 			*  A SDL_SysWMinfo struct containing SDL info (internal usage only)
