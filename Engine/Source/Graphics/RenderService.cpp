@@ -18,6 +18,10 @@ PIXEL_DECLARE_SINGLETON(Pixel::RenderService);
 Pixel::RenderService::RenderService()
 {
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::RenderService);
+
+	//Create camera
+	_currentCamera = Pixel::SceneManager::Singleton()->CreateObject<Pixel::Object::Camera>();
+	_currentCamera->SetName("Camera");
 }
 
 Pixel::RenderService::~RenderService()
@@ -67,7 +71,6 @@ void Pixel::RenderService::Initialize()
 	//gluOrtho2D(-(float)_viewportSize.GetWidth() / (float)_viewportSize.GetHeight(), (float)_viewportSize.GetWidth() / (float)_viewportSize.GetHeight(), -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 
-	_projectionMatrix = glm::ortho(0.0f, (float)_viewportSize.GetWidth(), (float)_viewportSize.GetHeight(), 0.0f);
 	_isInitialized = true;
 }
 
@@ -202,6 +205,16 @@ void Pixel::RenderService::LinkShaders()
 	_shaders.clear();
 }
 
+void Pixel::RenderService::SetCurrentCamera(std::shared_ptr<Pixel::Object::Camera> camera)
+{
+	_currentCamera = camera;
+}
+
+std::shared_ptr<Pixel::Object::Camera> Pixel::RenderService::GetCurrentCamera() const
+{
+	return _currentCamera;
+}
+
 void Pixel::RenderService::SetWireframeEnabled(bool enabled)
 {
 	_wireframeEnabled = enabled;
@@ -234,6 +247,15 @@ GLuint Pixel::RenderService::GetProgram() const
 
 glm::mat4 Pixel::RenderService::GetProjectionMatrix() const
 {
-	return _projectionMatrix;
+	return glm::ortho(0.0f, (float)_viewportSize.GetWidth(), (float)_viewportSize.GetHeight(), 0.0f);
+}
+
+glm::mat4 Pixel::RenderService::GetCameraMatrix() const
+{
+	return glm::translate(glm::mat4(), glm::vec3(
+		-(float)GetCurrentCamera()->GetPosition().GetX() + (float)_viewportSize.GetWidth() / 2,
+		-(float)GetCurrentCamera()->GetPosition().GetY() + (float)_viewportSize.GetHeight() / 2,
+		0.0f
+	));
 }
 

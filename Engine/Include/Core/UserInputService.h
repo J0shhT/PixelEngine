@@ -3,6 +3,7 @@
 #include "Include/Common.h"
 
 #include <gainput/gainput.h>
+#include <wx/defs.h>
 
 namespace Pixel {
 
@@ -67,7 +68,7 @@ namespace Pixel {
 			/**
 			*  TODO
 			*/
-			void PollWxWidgets();
+			bool IsKeyDown(Pixel::Key) const;
 
 			/**
 			*  TODO
@@ -103,6 +104,8 @@ namespace Pixel {
 			void _signalDeviceButtonUp(gainput::DeviceId device, gainput::DeviceButtonId deviceButton);
 
 			std::map<InputEventType, std::map<std::string, InputEventCallback*>> _connectedCallbacks;
+			std::map<Pixel::Key, bool> _activeKeys;
+			std::map<wxKeyCode, bool> _activeWxKeys;
 
 			gainput::InputManager* _inputManager;
 			InputListener* _listener;

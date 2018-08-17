@@ -161,9 +161,15 @@ void Pixel::App::StepPhysics()
 		return;
 
 	static Pixel::PhysicsService* physicsService = Pixel::PhysicsService::Singleton();
+	static Pixel::RenderService* renderService = Pixel::RenderService::Singleton();
+
+	//Simulate game
 	physicsService->TimeFrame();
 	physicsService->SimulateGameObjects();
 	physicsService->SimulateSystemObjects();
+
+	//Update camera
+	renderService->GetCurrentCamera()->Update(physicsService->GetLastPhysicsFrameDelta());
 }
 
 void Pixel::App::Render()

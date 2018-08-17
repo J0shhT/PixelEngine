@@ -70,6 +70,9 @@ namespace Pixel {
 	template<typename T> std::shared_ptr<T> SceneManager::CreateObject()
 	{
 		std::shared_ptr<T> object = std::make_shared<T>();
+		std::ostringstream strStream;
+		strStream << "SceneManager::CreateObject() - Object of type " << typeid(T).name() << " created at address " << object.get();
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, strStream.str().c_str());
 		_addObject(object);
 		return object;
 	}

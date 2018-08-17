@@ -29,6 +29,7 @@
 #include "Include/Object/RenderableObject.h"
 #include "Include/Object/PhysicalObject.h"
 #include "Include/Object/Rectangle.h"
+#include "Include/Object/Camera.h"
 
 /* Type */
 #include "Include/Type/Position.h"

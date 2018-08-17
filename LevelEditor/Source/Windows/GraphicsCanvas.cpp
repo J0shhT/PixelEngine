@@ -18,8 +18,6 @@ Pixel::Editor::GraphicsCanvas::GraphicsCanvas(wxPanel* parent) : wxGLCanvas(pare
 }
 void Pixel::Editor::GraphicsCanvas::Idle(wxIdleEvent& event)
 {
-	static Pixel::UserInputService* userInputService = Pixel::UserInputService::Singleton();
-	userInputService->PollWxWidgets();
 	Paint();
 	event.RequestMore();
 }

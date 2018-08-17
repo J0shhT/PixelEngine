@@ -81,7 +81,7 @@
 		throw Pixel::Exception::FatalError("Failed to create " STRINGIFY(className) " because a singleton instance already exists"); \
 	className::instance = this; \
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE); \
-	SetConsoleTextAttribute(consoleHandle, 11); \
+	SetConsoleTextAttribute(consoleHandle, 13); \
 	std::ostringstream __creationMessage; \
 	__creationMessage << STRINGIFY(className) "() - Created " << this; \
 	std::cout << __creationMessage.str() << std::endl; \
@@ -90,10 +90,24 @@
 
 #define PIXEL_SINGLETON_DECONSTRUCTOR(className) \
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE); \
-	SetConsoleTextAttribute(consoleHandle, 11); \
+	SetConsoleTextAttribute(consoleHandle, 13); \
 	std::ostringstream __creationMessage; \
 	__creationMessage << STRINGIFY(className) "() - Destroyed " << this; \
 	std::cout << __creationMessage.str() << std::endl; \
 	Pixel::LogService::Singleton()->Log(this, __creationMessage.str()); \
 	SetConsoleTextAttribute(consoleHandle, 15); \
 	className::instance = nullptr;
+
+
+
+/* Helper functions */
+namespace Pixel::Util
+{
+
+	template <typename T>
+	inline bool IsWeakPtrInitialized(std::weak_ptr<T> const& weak)
+	{
+		return !(!weak.owner_before(std::weak_ptr<T>{}) && !std::weak_ptr<T>{}.owner_before(weak));
+	}
+
+}

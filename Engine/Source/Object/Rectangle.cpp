@@ -67,9 +67,9 @@ void Pixel::Object::Rectangle::Render()
 
 	//Projection
 	glm::mat4 worldSpaceMatrix = glm::translate(glm::mat4(), glm::vec3((float)position.GetX(), (float)position.GetY(), 0.0f));
-	//glm::mat4 cameraSpaceMatrix = renderService->GetCameraMatrix();
+	glm::mat4 cameraSpaceMatrix = renderService->GetCameraMatrix();
 	glm::mat4 projectionMatrix = renderService->GetProjectionMatrix();
-	glm::mat4 worldViewMatrix = projectionMatrix * /*cameraSpaceMatrix **/ worldSpaceMatrix;
+	glm::mat4 worldViewMatrix = projectionMatrix * cameraSpaceMatrix * worldSpaceMatrix;
 	static GLuint matrixId = glGetUniformLocation(renderService->GetProgram(), "worldViewMatrix");
 	glUniformMatrix4fv(matrixId, 1, GL_FALSE, &worldViewMatrix[0][0]);
 

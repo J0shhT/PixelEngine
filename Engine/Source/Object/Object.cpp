@@ -8,15 +8,15 @@ Pixel::Object::Object::Object()
 {
 	PIXEL_OBJECT_CONSTRUCTOR(Object);
 	std::ostringstream strStream;
-	strStream << "Pixel::Object::Object() - " << this;
-	Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, strStream.str().c_str());
+	strStream << "Object::Object() - Created " << this;
+	Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Debug, strStream.str().c_str());
 }
 
 Pixel::Object::Object::~Object()
 {
 	std::ostringstream strStream;
-	strStream << "Pixel::Object::~Object() - " << this;
-	Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, strStream.str().c_str());
+	strStream << "Object::Object() - Destroyed " << this;
+	Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Debug, strStream.str().c_str());
 	PIXEL_OBJECT_DECONSTRUCTOR(Object);
 }
 

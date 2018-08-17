@@ -135,12 +135,7 @@ void Pixel::UserInputService::Update()
 			}
 		}
 	}
-}
-
-void Pixel::UserInputService::PollWxWidgets()
-{
-	static Pixel::App* app = Pixel::App::Singleton();
-	if (app->IsWxWidgets())
+	else if (app->IsWxWidgets())
 	{
 		static bool wasMouseLeftDown = false;
 		static bool wasMouseRightDown = false;
@@ -219,10 +214,76 @@ void Pixel::UserInputService::PollWxWidgets()
 				_signalMouseUp(Pixel::MouseButton::MouseButton6);
 			wasMouseAux2Down = false;
 		}
+
+		//standard ASCII keys (key 32 to 96)
+		for (size_t key = 32; key <= 96; key++)
+		{
+			wxKeyCode keyCode = wxKeyCode(key);
+			//Add key to map if it's not in there yet
+			if (_activeWxKeys.find(keyCode) == _activeWxKeys.end())
+			{
+				_activeWxKeys[keyCode] = false;
+			}
+
+			//Check key state
+			if (wxGetKeyState(keyCode))
+			{
+				if (_activeWxKeys[keyCode] == false)
+					_signalKeyDown((Pixel::Key)key);
+				_activeWxKeys[keyCode] = true;
+			}
+			else
+			{
+				if (_activeWxKeys[keyCode] == true)
+					_signalKeyUp((Pixel::Key)key);
+				_activeWxKeys[keyCode] = false;
+			}
+		}
+	}
+}
+
+enum KeyConversionTable
+{
+
+};
+wxKeyCode convertToWxKey(Pixel::Key key)
+{
+	if (key >= 32 && key <= 96)
+	{
+		return wxKeyCode(key);
 	}
 	else
 	{
-		PixelWarning("UserInputService::PollWxWidgets() - Windowing subsystem is not set to wxWidgets");
+		PixelError("Failed to convert Pixel::Key " + std::to_string(key) + " to a wxKeyCode");
+		return wxKeyCode::WXK_NONE;
+	}
+}
+
+bool Pixel::UserInputService::IsKeyDown(Pixel::Key key) const
+{
+	static Pixel::App* app = Pixel::App::Singleton();
+	if (app->IsSDL())
+	{
+		if (_activeKeys.find(key) == _activeKeys.end())
+		{
+			return false;
+		}
+		else
+		{
+			return _activeKeys.at(key);
+		}
+	}
+	else if (app->IsWxWidgets())
+	{
+		wxKeyCode wxKey = convertToWxKey(key);
+		if (_activeWxKeys.find(wxKey) == _activeWxKeys.end())
+		{
+			return false;
+		}
+		else
+		{
+			return _activeWxKeys.at(wxKey);
+		}
 	}
 }
 
@@ -303,6 +364,7 @@ void Pixel::UserInputService::_signalMouseUp(Pixel::MouseButton mouseButton)
 
 void Pixel::UserInputService::_signalKeyDown(Pixel::Key key)
 {
+	_activeKeys[key] = true;
 	Pixel::InputEvent e;
 	e.inputType = Pixel::InputEventType::KeyDown;
 	e.key = key;
@@ -311,6 +373,7 @@ void Pixel::UserInputService::_signalKeyDown(Pixel::Key key)
 
 void Pixel::UserInputService::_signalKeyUp(Pixel::Key key)
 {
+	_activeKeys[key] = false;
 	Pixel::InputEvent e;
 	e.inputType = Pixel::InputEventType::KeyUp;
 	e.key = key;

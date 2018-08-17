@@ -2,6 +2,8 @@
 
 #include "Include/Common.h"
 
+#include "Include/Object/Camera.h"
+
 #include "Include/Type/Size.h"
 
 #include "Include/Graphics/Shader.h"
@@ -78,6 +80,18 @@ namespace Pixel {
 			void LinkShaders();
 
 			/**
+			*  Sets the current camera object to render the view from
+			*  A camera object is created automatically (and set as current)
+			when the RenderService is created
+			*/
+			void SetCurrentCamera(std::shared_ptr<Pixel::Object::Camera>);
+
+			/**
+			*  Gets the current camera object that the view is being rendered from
+			*/
+			std::shared_ptr<Pixel::Object::Camera> GetCurrentCamera() const;
+
+			/**
 			*  Sets whether or not the render system will render vertices in wireframe
 			*  This does not effect GUI elements or system objects
 			*/
@@ -115,6 +129,11 @@ namespace Pixel {
 			*/
 			glm::mat4 GetProjectionMatrix() const;
 
+			/**
+			*  TODO
+			*/
+			glm::mat4 GetCameraMatrix() const;
+
 		private:
 
 			///todo: document these
@@ -126,8 +145,7 @@ namespace Pixel {
 			GLuint _glVertexArrays;
 			SDL_GLContext _glContext;
 
-			glm::mat4 _projectionMatrix;
-
+			std::shared_ptr<Pixel::Object::Camera> _currentCamera;
 			Pixel::Type::Size _viewportSize;
 			Pixel::Type::Size _aspectRatio;
 			bool _wireframeEnabled = false;

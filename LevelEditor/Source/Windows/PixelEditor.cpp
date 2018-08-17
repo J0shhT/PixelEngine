@@ -12,7 +12,19 @@
 
 void MouseClickEvent(const Pixel::InputEvent& e)
 {
-	PixelPrintf("Mouse clicked! (button %d) (%d, %d)", e.mouseButton, e.mouseX, e.mouseY);
+	//PixelPrintf("Mouse clicked! (button %d) (%d, %d)", e.mouseButton, e.mouseX, e.mouseY);
+	wxMessageBox("Mouse clicked! (button " + std::to_string(e.mouseButton) + ") (" + std::to_string(e.mouseX) + ", " + std::to_string(e.mouseY) + ")");
+}
+
+void KeyboardEvent(const Pixel::InputEvent& e)
+{
+	/*
+	if (e.key == Pixel::Key::KeySpace)
+	{
+		PixelPrint("Space was pressed!");
+	}
+	*/
+	wxMessageBox("Key pressed! (button " + std::to_string(e.key) + ")");
 }
 
 #define PIXEL_WINDOW_WIDTH 815
@@ -48,7 +60,10 @@ bool Pixel::Editor::App::OnInit()
 
 		app->SetWxWidgetsWindow(mainWindow);
 
-		Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::MouseDown, &MouseClickEvent);
+		Pixel::RenderService::Singleton()->GetCurrentCamera()->SetCameraType(Pixel::CameraType::FreeCamera);
+
+		//Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::MouseDown, &MouseClickEvent);
+		//Pixel::UserInputService::Singleton()->Bind(Pixel::InputEventType::KeyDown, &KeyboardEvent);
 	}
 	catch (Pixel::Exception::FatalError)
 	{
