@@ -5,6 +5,7 @@
 #include "Include/Core/SelectionService.h"
 #include "Include/Core/LogService.h"
 #include "Include/Core/UserInputService.h"
+#include "Include/Core/ContentProvider.h"
 
 #include "Include/Graphics/RenderService.h"
 
@@ -25,6 +26,7 @@ Pixel::App::App(Pixel::WindowSubsystem subsystem) : _subsystem(subsystem)
 
 	//Create singleton services
 	new Pixel::HttpService();
+	new Pixel::ContentProvider();
 	new Pixel::UserInputService();
 	new Pixel::SceneManager();
 	new Pixel::PhysicsService();
@@ -42,6 +44,7 @@ Pixel::App::~App()
 	delete Pixel::PhysicsService::Singleton();
 	delete Pixel::SceneManager::Singleton();
 	delete Pixel::UserInputService::Singleton();
+	delete Pixel::ContentProvider::Singleton();
 	delete Pixel::HttpService::Singleton();
 
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::App);

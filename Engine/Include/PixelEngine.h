@@ -10,6 +10,7 @@
 #include "Include/Core/SceneManager.h"
 #include "Include/Core/SelectionService.h"
 #include "Include/Core/UserInputService.h"
+#include "Include/Core/ContentProvider.h"
 
 /* Graphics */
 #include "Include/Graphics/RenderService.h"

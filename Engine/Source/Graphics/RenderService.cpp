@@ -47,12 +47,20 @@ void Pixel::RenderService::Initialize()
 
 	/* Load engine vertex shader */
 	auto vertexShader = Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType::VertexShader);
-	vertexShader->Load("J:/PixelEngine/Dev/Build_Release/Shaders/Vertex.glsl");
+#ifdef _DEBUG
+	vertexShader->Load("J:/PixelEngine/Dev/Release/Shaders/Vertex.glsl");
+#else
+	vertexShader->Load("Shaders/Vertex.glsl");
+#endif
 	AddShader(vertexShader);
 
 	/* Load engine fragment shader */
 	auto fragmentShader = Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType::FragmentShader);
-	fragmentShader->Load("J:/PixelEngine/Dev/Build_Release/Shaders/Fragment.glsl");
+#ifdef _DEBUG
+	fragmentShader->Load("J:/PixelEngine/Dev/Release/Shaders/Fragment.glsl");
+#else
+	fragmentShader->Load("Shaders/Fragment.glsl");
+#endif
 	AddShader(fragmentShader);
 
 	//Link shaders
