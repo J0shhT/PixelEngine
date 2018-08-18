@@ -228,6 +228,11 @@ void Pixel::RenderService::SetWireframeEnabled(bool enabled)
 	_wireframeEnabled = enabled;
 }
 
+bool Pixel::RenderService::IsWireframeEnabled() const
+{
+	return _wireframeEnabled;
+}
+
 void Pixel::RenderService::SetViewport(int width, int height)
 {
 	_viewportSize = Pixel::Type::Size(width, height);

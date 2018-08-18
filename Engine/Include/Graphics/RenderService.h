@@ -98,6 +98,11 @@ namespace Pixel {
 			void SetWireframeEnabled(bool);
 
 			/**
+			*  Gets whether or not wireframe mode is enabled
+			*/
+			bool IsWireframeEnabled() const;
+
+			/**
 			*  Sets the rendering viewport for OpenGL
 			*  Values should be something like (800, 600), (1920, 1080), etc
 			*/

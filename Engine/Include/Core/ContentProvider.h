@@ -83,6 +83,11 @@ namespace Pixel {
 			*/
 			Pixel::ContentId LoadTextFile(std::string filePath);
 
+			/**
+			*  TODO
+			*/
+			Pixel::ContentId LoadTextureFile(std::string filePath);
+
 		private:
 
 			std::map<Pixel::ContentId, Pixel::Content*> _loadedContent;

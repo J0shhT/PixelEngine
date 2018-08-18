@@ -146,3 +146,59 @@ Pixel::ContentId Pixel::ContentProvider::LoadTextFile(std::string filePath)
 
 	return std::string("");
 }
+
+Pixel::ContentId Pixel::ContentProvider::LoadTextureFile(std::string filePath)
+{
+	std::string filePathRaw = filePath;
+#ifdef _DEBUG
+	filePath = "J:/PixelEngine/Dev/Release/" + filePath;
+#endif
+
+	if (IsContentCached(filePathRaw))
+	{
+		return _loadedContentCache.at(filePathRaw);
+	}
+	else
+	{
+		Pixel::Content* content = new Pixel::Content();
+		content->type = ContentType::Texture;
+		content->id = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+
+		unsigned char* image;
+		if (image = SOIL_load_image(filePath.c_str(), &content->width, &content->height, 0, SOIL_LOAD_RGBA))
+		{
+			glGenTextures(1, &content->glTextureId);
+			glBindTexture(GL_TEXTURE_2D, content->glTextureId);
+			glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RGBA,
+				content->width,
+				content->height,
+				0,
+				GL_RGBA,
+				GL_UNSIGNED_BYTE,
+				image
+			);
+			SOIL_free_image_data(image);
+			content->filePath = filePathRaw;
+		}
+		else
+		{
+			SOIL_free_image_data(image);
+			PixelError("ContentProvider failed to load content \"" + filePathRaw + "\"");
+			return std::string("");
+		}
+
+		_loadedContent.emplace(content->id, content);
+		_loadedContentCache.emplace(content->filePath, content->id);
+
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
+			("ContentProvider loaded content \"" + content->filePath + "\" with id \"" + content->id + "\"").c_str()
+		);
+
+		return content->id;
+	}
+
+	return std::string("");
+}

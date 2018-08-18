@@ -125,34 +125,35 @@ void Pixel::Object::Rectangle::Render()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	//Send texture
-	/*
 	glEnableVertexAttribArray(2);
-	static GLuint hasTextureId = glGetUniformLocation(shaderId, "hasTexture");
+	static GLuint hasTextureId = glGetUniformLocation(renderService->GetProgram(), "hasTexture");
 	int hasTexture = 0;
-	Content textureContent = ContentProvider::singleton()->Get(this->_textureContentId);
-	if (textureContent.type != ContentType::NullContent)
+	if (_texture != "")
 	{
-		if (!game->IsWireframe())
+		auto textureContent = Pixel::ContentProvider::Singleton()->Get(_texture);
+		if (textureContent->type == ContentType::Texture)
 		{
-			glBindTexture(GL_TEXTURE_2D, textureContent.gl_TextureId);
-			hasTexture = 1;
+			if (!renderService->IsWireframeEnabled())
+			{
+				glBindTexture(GL_TEXTURE_2D, textureContent->glTextureId);
+				hasTexture = 1;
+			}
 		}
 	}
 	if (hasTextureId != -1)
 	{
 		glUniform1i(hasTextureId, hasTexture);
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, this->_textureBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, _textureBufferId);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	*/
 
 	//Draw
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	//glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(2);
 }
 
 void Pixel::Object::Rectangle::_checkCollisions()

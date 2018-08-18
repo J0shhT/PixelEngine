@@ -9,6 +9,8 @@
 #include "Include/Type/Velocity.h"
 #include "Include/Type/Color.h"
 
+#include "Include/Core/ContentProvider.h"
+
 namespace Pixel::Object {
 
 	/**
@@ -64,6 +66,11 @@ namespace Pixel::Object {
 			/**
 			*  TODO
 			*/
+			std::string GetTexture() const;
+
+			/**
+			*  TODO
+			*/
 			void SetPosition(Pixel::Type::WorldPosition);
 
 			/**
@@ -94,6 +101,11 @@ namespace Pixel::Object {
 			/**
 			*  TODO
 			*/
+			void SetTexture(std::string filePath);
+
+			/**
+			*  TODO
+			*/
 			virtual void StepPhysics(double frameDelta) = 0;
 
 		protected:
@@ -104,6 +116,7 @@ namespace Pixel::Object {
 			bool _isAnchored;
 			bool _isSolid;
 			Pixel::Type::Color _color;
+			Pixel::ContentId _texture;
 
 			bool _hasCollisionTop;
 			bool _hasCollisionBottom;

@@ -9,6 +9,7 @@ Pixel::Object::PhysicalObject::PhysicalObject()
 	PIXEL_OBJECT_CONSTRUCTOR(PhysicalObject);
 	_position = Pixel::Type::WorldPosition(0.0);
 	_size = Pixel::Type::Size(100.0);
+	_color = Pixel::Type::Color(1.0, 1.0, 1.0);
 	_isSolid = true;
 	_isAnchored = false;
 }
@@ -48,6 +49,22 @@ Pixel::Type::Color Pixel::Object::PhysicalObject::GetColor() const
 	return _color;
 }
 
+std::string Pixel::Object::PhysicalObject::GetTexture() const
+{
+	if (_texture != "")
+	{
+		auto texture = Pixel::ContentProvider::Singleton()->Get(_texture);
+		if (texture->type == Pixel::ContentType::Texture)
+		{
+			return texture->filePath;
+		}
+	}
+	else
+	{
+		return "";
+	}
+}
+
 void Pixel::Object::PhysicalObject::SetPosition(Pixel::Type::WorldPosition value)
 {
 	_position = value;
@@ -76,4 +93,13 @@ void Pixel::Object::PhysicalObject::SetSolid(bool value)
 void Pixel::Object::PhysicalObject::SetColor(Pixel::Type::Color value)
 {
 	_color = value;
+}
+
+void Pixel::Object::PhysicalObject::SetTexture(std::string filePath)
+{
+	Pixel::ContentId textureId = Pixel::ContentProvider::Singleton()->LoadTextureFile(filePath);
+	if (textureId != "")
+	{
+		_texture = textureId;
+	}
 }
