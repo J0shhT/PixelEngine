@@ -6,6 +6,7 @@
 #include "Include/Core/LogService.h"
 #include "Include/Core/UserInputService.h"
 #include "Include/Core/ContentProvider.h"
+#include "Include/Core/SoundService.h"
 
 #include "Include/Graphics/RenderService.h"
 
@@ -27,6 +28,7 @@ Pixel::App::App(Pixel::WindowSubsystem subsystem) : _subsystem(subsystem)
 	//Create singleton services
 	new Pixel::HttpService();
 	new Pixel::ContentProvider();
+	new Pixel::SoundService();
 	new Pixel::UserInputService();
 	new Pixel::SceneManager();
 	new Pixel::PhysicsService();
@@ -44,6 +46,7 @@ Pixel::App::~App()
 	delete Pixel::PhysicsService::Singleton();
 	delete Pixel::SceneManager::Singleton();
 	delete Pixel::UserInputService::Singleton();
+	delete Pixel::SoundService::Singleton();
 	delete Pixel::ContentProvider::Singleton();
 	delete Pixel::HttpService::Singleton();
 
@@ -217,7 +220,7 @@ void Pixel::App::UpdateSound()
 	if (_closeRequested)
 		return;
 
-	//todo
+	Pixel::SoundService::Singleton()->Update();
 }
 
 void Pixel::App::StepGame()

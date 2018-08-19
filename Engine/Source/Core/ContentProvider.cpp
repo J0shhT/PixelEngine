@@ -1,7 +1,8 @@
 #include "Include/Core/ContentProvider.h"
 
 #include "Include/PixelError.h"
-#include "Include/Core/PixelApp.h"
+
+#include "Include/Core/SoundService.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -65,8 +66,8 @@ void Pixel::ContentProvider::FreeContent(Pixel::ContentId id)
 		else if (content->type == ContentType::Sound)
 		{
 			//Cleanup fmod sound
-			identifier = content->filePath;
-			content->fmodSound->release();
+			//identifier = content->filePath;
+			//content->fmodSound->release();
 		}
 
 		delete _loadedContent.at(id);
@@ -186,6 +187,52 @@ Pixel::ContentId Pixel::ContentProvider::LoadTextureFile(std::string filePath)
 		else
 		{
 			SOIL_free_image_data(image);
+			PixelError("ContentProvider failed to load content \"" + filePathRaw + "\"");
+			return std::string("");
+		}
+
+		_loadedContent.emplace(content->id, content);
+		_loadedContentCache.emplace(content->filePath, content->id);
+
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
+			("ContentProvider loaded content \"" + content->filePath + "\" with id \"" + content->id + "\"").c_str()
+		);
+
+		return content->id;
+	}
+
+	return std::string("");
+}
+
+Pixel::ContentId Pixel::ContentProvider::LoadSoundFile(std::string filePath)
+{
+	std::string filePathRaw = filePath;
+#ifdef _DEBUG
+	filePath = "J:/PixelEngine/Dev/Release/" + filePath;
+#endif
+
+	if (IsContentCached(filePathRaw))
+	{
+		return _loadedContentCache.at(filePathRaw);
+	}
+	else
+	{
+		Pixel::Content* content = new Pixel::Content();
+		content->type = ContentType::Sound;
+		content->id = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+
+		FMOD::System* fmod = Pixel::SoundService::Singleton()->GetSoundSystem();
+		FMOD::Sound* sound;
+		FMOD::Channel* channel = 0;
+		FMOD_RESULT result = fmod->createSound(filePath.c_str(), FMOD_DEFAULT, 0, &sound);
+		if (result == FMOD_OK)
+		{
+			content->fmodSound = sound;
+			content->fmodChannel = channel;
+			content->filePath = filePathRaw;
+		}
+		else
+		{
 			PixelError("ContentProvider failed to load content \"" + filePathRaw + "\"");
 			return std::string("");
 		}

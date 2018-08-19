@@ -11,16 +11,14 @@
 #include "Include/Core/SelectionService.h"
 #include "Include/Core/UserInputService.h"
 #include "Include/Core/ContentProvider.h"
+#include "Include/Core/SoundService.h"
 
 /* Graphics */
 #include "Include/Graphics/RenderService.h"
 #include "Include/Graphics/Shader.h"
 
 /* Physics */
-//todo
-
-/* Sound */
-//todo
+#include "Include/Physics/PhysicsService.h"
 
 /* Network */
 #include "Include/Network/HttpService.h"
