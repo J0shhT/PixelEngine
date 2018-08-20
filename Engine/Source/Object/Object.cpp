@@ -25,6 +25,37 @@ std::string Pixel::Object::Object::GetId() const
 	return _id;
 }
 
+Pixel::EventCallbackId Pixel::Object::Object::Bind(Pixel::EventType type, Pixel::EventCallback* callback)
+{
+	Pixel::EventCallbackId callbackId = Pixel::EventManager::Singleton()->RegisterCallback(callback);
+	if (_connectedEvents.find(type) == _connectedEvents.end())
+	{
+		_connectedEvents[type] = std::vector<Pixel::EventCallbackId>();
+	}
+	_connectedEvents[type].push_back(callbackId);
+	return callbackId;
+}
+
+void Pixel::Object::Object::Unbind(Pixel::EventType type, Pixel::EventCallbackId callbackId)
+{
+	Pixel::EventManager::Singleton()->UnregisterCallback(callbackId);
+	if (_connectedEvents.find(type) != _connectedEvents.end())
+	{
+		for (auto iter = _connectedEvents[type].begin(); iter != _connectedEvents[type].end();)
+		{
+			if (*iter == callbackId)
+			{
+				iter = _connectedEvents[type].erase(iter);
+				return;
+			}
+			else
+			{
+				iter++;
+			}
+		}
+	}
+}
+
 double Pixel::Object::Object::GetAge() const
 {
 	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::high_resolution_clock::now();
@@ -44,4 +75,27 @@ void Pixel::Object::Object::SetName(const std::string &name)
 bool Pixel::Object::Object::IsDeleted()
 {
 	return _isDeleted;
+}
+
+void Pixel::Object::Object::_invokeEvent(Pixel::Event::Event e) const
+{
+	if (_connectedEvents.find(e.type) != _connectedEvents.end())
+	{
+		for (auto iter = _connectedEvents.at(e.type).begin(); iter != _connectedEvents.at(e.type).end();)
+		{
+			size_t sizeBefore = _connectedEvents.at(e.type).size();
+			Pixel::EventManager::Singleton()->InvokeCallback(*iter, e);
+			if (_connectedEvents.at(e.type).size() > 0)
+			{
+				if (sizeBefore == _connectedEvents.at(e.type).size())
+				{
+					iter++;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
 }

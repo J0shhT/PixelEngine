@@ -169,8 +169,9 @@ void Pixel::Object::Rectangle::_checkCollisions()
 		if (iter->second->IsA<Pixel::Object::PhysicalObject>())
 		{
 			std::shared_ptr<Pixel::Object::PhysicalObject> physicsObject = std::dynamic_pointer_cast<Pixel::Object::PhysicalObject>(iter->second);
-			if (physicsObject->IsSolid() && GetId() != physicsObject->GetId())
+			if (GetId() != physicsObject->GetId())
 			{
+
 				//Construct bounding box
 				struct AABB {
 					double x1;
@@ -197,34 +198,58 @@ void Pixel::Object::Rectangle::_checkCollisions()
 					}
 				}
 
-				//Determine touched side
-				if (isTouching)
+				if (IsSolid() && physicsObject->IsSolid())
 				{
-					//Side clamp
-					double clampToRightJump = abs(a.x1 - b.x2);
-					double clampToLeftJump = abs(a.x2 - b.x1);
-					double clampToTopJump = abs(a.y2 - b.y1);
-					double clampToBottomJump = abs(a.y1 - b.y2);
-					auto clampJumps = { clampToRightJump, clampToLeftJump, clampToTopJump, clampToBottomJump };
-					if ((std::min)(clampJumps) == clampToRightJump)
+					//Determine touched side
+					if (isTouching)
 					{
-						_position.SetX(b.x2);
-						hasCollisionLeft = true;
+						//Side clamp
+						double clampToRightJump = abs(a.x1 - b.x2);
+						double clampToLeftJump = abs(a.x2 - b.x1);
+						double clampToTopJump = abs(a.y2 - b.y1);
+						double clampToBottomJump = abs(a.y1 - b.y2);
+						auto clampJumps = { clampToRightJump, clampToLeftJump, clampToTopJump, clampToBottomJump };
+						if ((std::min)(clampJumps) == clampToRightJump)
+						{
+							_position.SetX(b.x2);
+							hasCollisionLeft = true;
+						}
+						else if ((std::min)(clampJumps) == clampToLeftJump)
+						{
+							_position.SetX(b.x1 - this->GetSize().GetWidth());
+							hasCollisionRight = true;
+						}
+						else if ((std::min)(clampJumps) == clampToTopJump)
+						{
+							_position.SetY(b.y1 - this->GetSize().GetHeight());
+							hasCollisionTop = true;
+						}
+						else if ((std::min)(clampJumps) == clampToBottomJump)
+						{
+							_position.SetY(b.y2);
+							hasCollisionBottom = true;
+						}
 					}
-					else if ((std::min)(clampJumps) == clampToLeftJump)
+					if (isTouching)
 					{
-						_position.SetX(b.x1 - this->GetSize().GetWidth());
-						hasCollisionRight = true;
+						//Object is colliding, invoke CollisionEvent
+						Pixel::Event::Event e = Pixel::Event::Event();
+						e.type = Pixel::EventType::CollisionEvent;
+						e.object = weak_from_this();
+						e.collidedObject = physicsObject;
+						_invokeEvent(e);
 					}
-					else if ((std::min)(clampJumps) == clampToTopJump)
+				}
+				else
+				{
+					if (isTouching)
 					{
-						_position.SetY(b.y1 - this->GetSize().GetHeight());
-						hasCollisionTop = true;
-					}
-					else if ((std::min)(clampJumps) == clampToBottomJump)
-					{
-						_position.SetY(b.y2);
-						hasCollisionBottom = true;
+						//Object isn't collidable, but is overlapping, invoke IntersectionEvent
+						Pixel::Event::Event e = Pixel::Event::Event();
+						e.type = Pixel::EventType::IntersectionEvent;
+						e.object = weak_from_this();
+						e.collidedObject = physicsObject;
+						_invokeEvent(e);
 					}
 				}
 			}

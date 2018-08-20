@@ -7,6 +7,7 @@
 #include "Include/Core/UserInputService.h"
 #include "Include/Core/ContentProvider.h"
 #include "Include/Core/SoundService.h"
+#include "Include/Core/EventManager.h"
 
 #include "Include/Graphics/RenderService.h"
 
@@ -26,6 +27,7 @@ Pixel::App::App(Pixel::WindowSubsystem subsystem) : _subsystem(subsystem)
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::App);
 
 	//Create singleton services
+	new Pixel::EventManager();
 	new Pixel::HttpService();
 	new Pixel::ContentProvider();
 	new Pixel::SoundService();
@@ -49,6 +51,7 @@ Pixel::App::~App()
 	delete Pixel::SoundService::Singleton();
 	delete Pixel::ContentProvider::Singleton();
 	delete Pixel::HttpService::Singleton();
+	delete Pixel::EventManager::Singleton();
 
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::App);
 

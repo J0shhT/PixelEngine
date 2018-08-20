@@ -308,13 +308,13 @@ void Pixel::UserInputService::Unbind(InputEventType type, const std::string& id)
 		}
 		else
 		{
-			PixelWarning("UserInputService::Unbind() - No event connected with id \"" + id + "\" (InputEventType " + std::to_string((int)type) + ")");
+			PixelError("UserInputService::Unbind() - No event connected with id \"" + id + "\" (InputEventType " + std::to_string((int)type) + ")");
 			return;
 		}
 	}
 	else
 	{
-		PixelWarning("UserInputService::Unbind() - No event connected with id \"" + id + "\" (InputEventType " + std::to_string((int)type) + ")");
+		PixelError("UserInputService::Unbind() - No event connected with id \"" + id + "\" (InputEventType " + std::to_string((int)type) + ")");
 		return;
 	}
 }

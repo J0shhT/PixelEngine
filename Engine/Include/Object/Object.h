@@ -2,6 +2,8 @@
 
 #include "Include/Common.h"
 
+#include "Include/Core/EventManager.h"
+
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -64,6 +66,16 @@ namespace Pixel::Object {
 			/**
 			*  TODO
 			*/
+			Pixel::EventCallbackId Bind(Pixel::EventType, Pixel::EventCallback*);
+
+			/**
+			*  TODO
+			*/
+			void Unbind(Pixel::EventType, Pixel::EventCallbackId);
+
+			/**
+			*  TODO
+			*/
 			double GetAge() const;
 
 			/**
@@ -91,6 +103,11 @@ namespace Pixel::Object {
 			friend class Pixel::SceneManager;
 
 			/**
+			*  TODO
+			*/
+			void _invokeEvent(Pixel::Event::Event) const;
+
+			/**
 			*  The unique id representing this object
 			*  This id is generated when the object is created
 			*  See Object::GetId()
@@ -102,6 +119,12 @@ namespace Pixel::Object {
 			*  See Object::GetAge()
 			*/
 			std::chrono::time_point<std::chrono::steady_clock> _createdAt;
+
+			/**
+			*  Currently connected events for this object
+			*  See Object::Bind()
+			*/
+			std::map<Pixel::EventType, std::vector<Pixel::EventCallbackId>> _connectedEvents;
 
 			/**
 			*  Whether or not the object was deleted from it's scene
