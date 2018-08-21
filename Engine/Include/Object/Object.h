@@ -26,9 +26,10 @@
 		return STRINGIFY(className); \
 	}
 
-/* Forward declaration for SceneManager */
+/* Forward declarations */
 namespace Pixel {
 	class SceneManager;
+	class GuiService;
 }
 
 #pragma warning(push)
@@ -101,6 +102,7 @@ namespace Pixel::Object {
 		protected:
 
 			friend class Pixel::SceneManager;
+			friend class Pixel::GuiService;
 
 			/**
 			*  TODO

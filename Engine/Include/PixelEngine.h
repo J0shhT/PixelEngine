@@ -16,6 +16,7 @@
 /* Graphics */
 #include "Include/Graphics/RenderService.h"
 #include "Include/Graphics/Shader.h"
+#include "Include/Graphics/GuiService.h"
 
 /* Physics */
 #include "Include/Physics/PhysicsService.h"
@@ -29,6 +30,8 @@
 #include "Include/Object/PhysicalObject.h"
 #include "Include/Object/Rectangle.h"
 #include "Include/Object/Camera.h"
+#include "Include/Object/GuiObject.h"
+#include "Include/Object/BasicTextGui.h"
 
 /* Type */
 #include "Include/Type/Position.h"
@@ -66,3 +69,16 @@
 *  This macro also frees the ownership of the shared_ptr given to the macro.
 */
 #define PixelDeleteObject(obj) if (Pixel::SceneManager::Singleton()->DeleteObject(obj)) { obj.reset(); }
+
+/**
+*  Argument 1: The gui object classname to create that is inside the namespace Pixel::Object
+*  Returns a shared_ptr to the gui object created
+*/
+#define PixelCreateGui(type) Pixel::GuiService::Singleton()->CreateGui<Pixel::Object:: ## type>();
+
+/**
+*  Argument 1: shared_ptr to a class that inherits from Pixel::Object::GuiObject
+*  Removes the specified object from the GuiService and marks it as deleted.
+*  This macro also frees the ownership of the shared_ptr given to the macro.
+*/
+#define PixelDeleteGui(obj) if (Pixel::GuiService::Singleton()->DeleteGui(obj)) { obj.reset(); }

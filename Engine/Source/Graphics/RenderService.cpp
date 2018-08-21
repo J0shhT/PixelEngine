@@ -5,8 +5,11 @@
 #include "Include/Core/PixelApp.h"
 
 #include "Include/Object/RenderableObject.h"
+#include "Include/Object/BasicTextGui.h"
 
 #include "Include/Core/SceneManager.h"
+
+#include "Include/Graphics/GuiService.h"
 
 #include "Include/Physics/PhysicsService.h"
 
@@ -126,24 +129,41 @@ void Pixel::RenderService::RenderSystemObjects()
 
 void Pixel::RenderService::RenderScreenGuis()
 {
-
+	glUseProgram(_glProgram);
+	auto guiObjects = Pixel::GuiService::Singleton()->GetGuiObjects();
+	for (auto iter = guiObjects.cbegin(); iter != guiObjects.cend(); ++iter)
+	{
+		std::shared_ptr<Pixel::Object::GuiObject> object = iter->second;
+		if (object->IsA<Pixel::Object::BasicTextGui>())
+		{
+			//BasicTextGui object's don't use shaders
+			glUseProgram(0);
+			object->Render();
+			glUseProgram(_glProgram);
+		}
+		else
+		{
+			object->Render();
+		}
+		object.reset();
+	}
+	glUseProgram(0);
 }
 
 void Pixel::RenderService::RenderSystemGuis()
 {
 	glUseProgram(0);
-	glLoadIdentity();
 	double lastPhysicsFrameDelta = Pixel::PhysicsService::Singleton()->GetLastPhysicsFrameDelta();
 
 	glColor3f(1.0f, 0.0f, 1.0f);
 
-	glRasterPos2f(-0.98, 0.93f);
+	glRasterPos2f(0.01f, 0.04f);
 	std::string fpsCounterText = std::to_string(static_cast<int>(1.0 / lastPhysicsFrameDelta)) + std::string(" FPS");
 	for (auto iter = fpsCounterText.begin(); iter != fpsCounterText.end(); iter++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
 	}
 
-	glRasterPos2f(-0.98, 0.87f);
+	glRasterPos2f(0.01f, 0.075f);
 	std::string frameDeltaSecText = std::to_string(lastPhysicsFrameDelta) + std::string("s");
 	for (auto iter = frameDeltaSecText.begin(); iter != frameDeltaSecText.end(); iter++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);

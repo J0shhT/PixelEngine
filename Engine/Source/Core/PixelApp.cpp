@@ -10,6 +10,7 @@
 #include "Include/Core/EventManager.h"
 
 #include "Include/Graphics/RenderService.h"
+#include "Include/Graphics/GuiService.h"
 
 #include "Include/Physics/PhysicsService.h"
 
@@ -30,6 +31,7 @@ Pixel::App::App(Pixel::WindowSubsystem subsystem) : _subsystem(subsystem)
 	new Pixel::EventManager();
 	new Pixel::HttpService();
 	new Pixel::ContentProvider();
+	new Pixel::GuiService();
 	new Pixel::SoundService();
 	new Pixel::UserInputService();
 	new Pixel::SceneManager();
@@ -49,6 +51,7 @@ Pixel::App::~App()
 	delete Pixel::SceneManager::Singleton();
 	delete Pixel::UserInputService::Singleton();
 	delete Pixel::SoundService::Singleton();
+	delete Pixel::GuiService::Singleton();
 	delete Pixel::ContentProvider::Singleton();
 	delete Pixel::HttpService::Singleton();
 	delete Pixel::EventManager::Singleton();
@@ -207,6 +210,9 @@ void Pixel::App::Render()
 
 	renderService->RenderWorldObjects();
 	renderService->RenderSystemObjects();
+
+	glLoadIdentity();
+	gluOrtho2D(0.0f, 1.0f, 1.0f, 0.0f);
 
 	renderService->RenderScreenGuis();
 	if (_debugGuiEnabled)
