@@ -1,10 +1,23 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Common.h
+*/
+
 #pragma once
 
 #define PIXEL_ENGINE
-#define PIXEL_ENGINE_VERSION "1.0.0.0"
+#define PIXEL_ENGINE_BUILD "alpha"
+#define PIXEL_ENGINE_VERSION "0.1.0.0"
+#define PIXEL_ENGINE_VERSION_INTERNAL "0.1.0.0"
 
-//DLL export/import defines
+#define DEBUG_BUILD_FILE_DIR "J:/PixelEngine/Dev/Release/"
 
+/* DLL import/export defines */
 #ifdef DLL_EXPORTS
 	#define PIXEL_API __declspec(dllexport)
 #else
@@ -26,19 +39,17 @@
 #include <algorithm>
 
 /* C Libraries */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <assert.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <cassert>
+#include <ctime>
 #include <memory.h>
-#include <stdarg.h>
+#include <cstdarg>
 
 /* Windows API */
 #include <Windows.h>
-
-
 
 /* Macros */
 
@@ -97,8 +108,6 @@
 	Pixel::LogService::Singleton()->Log(this, __creationMessage.str()); \
 	SetConsoleTextAttribute(consoleHandle, 15); \
 	className::instance = nullptr;
-
-
 
 /* Helper functions */
 namespace Pixel::Util

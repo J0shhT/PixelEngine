@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/ContentProvider.cpp
+*/
+
 #include "Include/Core/ContentProvider.h"
 
 #include "Include/PixelError.h"
@@ -57,7 +67,11 @@ void Pixel::ContentProvider::FreeContent(Pixel::ContentId id)
 		const Pixel::Content* const content = Get(id);
 		std::string identifier;
 
-		if (content->type == Pixel::ContentType::Texture)
+		if (content->type == ContentType::Text)
+		{
+
+		}
+		else if (content->type == Pixel::ContentType::Texture)
 		{
 			//Cleanup texture
 			identifier = content->filePath;
@@ -65,9 +79,7 @@ void Pixel::ContentProvider::FreeContent(Pixel::ContentId id)
 		}
 		else if (content->type == ContentType::Sound)
 		{
-			//Cleanup fmod sound
-			//identifier = content->filePath;
-			//content->fmodSound->release();
+			
 		}
 
 		delete _loadedContent.at(id);
@@ -108,7 +120,7 @@ Pixel::ContentId Pixel::ContentProvider::LoadTextFile(std::string filePath)
 {
 	std::string filePathRaw = filePath;
 #ifdef _DEBUG
-	filePath = "J:/PixelEngine/Dev/Release/" + filePath;
+	filePath = DEBUG_BUILD_FILE_DIR + filePath;
 #endif
 
 	if (IsContentCached(filePathRaw))
@@ -152,7 +164,7 @@ Pixel::ContentId Pixel::ContentProvider::LoadTextureFile(std::string filePath)
 {
 	std::string filePathRaw = filePath;
 #ifdef _DEBUG
-	filePath = "J:/PixelEngine/Dev/Release/" + filePath;
+	filePath = DEBUG_BUILD_FILE_DIR + filePath;
 #endif
 
 	if (IsContentCached(filePathRaw))
@@ -208,7 +220,7 @@ Pixel::ContentId Pixel::ContentProvider::LoadSoundFile(std::string filePath)
 {
 	std::string filePathRaw = filePath;
 #ifdef _DEBUG
-	filePath = "J:/PixelEngine/Dev/Release/" + filePath;
+	filePath = DEBUG_BUILD_FILE_DIR + filePath;
 #endif
 
 	if (IsContentCached(filePathRaw))

@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Object/PhysicalObject.cpp
+*/
+
 #include "Include/Object/PhysicalObject.h"
 
 #include "Include/PixelOutput.h"
@@ -59,10 +69,7 @@ std::string Pixel::Object::PhysicalObject::GetTexture() const
 			return texture->filePath;
 		}
 	}
-	else
-	{
-		return "";
-	}
+	return "";
 }
 
 void Pixel::Object::PhysicalObject::SetPosition(Pixel::Type::WorldPosition value)

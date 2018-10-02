@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/EventManager.cpp
+*/
+
 #include "Include/Core/EventManager.h"
 
 #include "Include/PixelError.h"
@@ -41,7 +51,7 @@ void Pixel::EventManager::UnregisterCallback(Pixel::EventCallbackId callbackId)
 	}
 }
 
-void Pixel::EventManager::InvokeCallback(Pixel::EventCallbackId callbackId, Pixel::Event::Event e) const
+void Pixel::EventManager::InvokeCallback(Pixel::EventCallbackId callbackId, Pixel::Event e) const
 {
 	auto callback = _connectedCallbacks.find(callbackId);
 	if (callback != _connectedCallbacks.end())
@@ -60,7 +70,7 @@ void Pixel::EventManager::InvokeCallback(Pixel::EventCallbackId callbackId, Pixe
 
 void Pixel::EventManager::InvokeCallback(Pixel::EventCallbackId callbackId) const
 {
-	Pixel::Event::Event e = Pixel::Event::Event();
+	Pixel::Event e = Pixel::Event();
 	e.type = Pixel::EventType::GenericEvent;
 	e.invoker = callbackId;
 	e.invokedAt = std::chrono::high_resolution_clock::now();

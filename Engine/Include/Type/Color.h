@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Type/Color.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
@@ -204,27 +214,9 @@ namespace Pixel::Type
 
 		private:
 
-			/**
-			*  The red component for this Color
-			*  See Pixel::Type::Color::SetRed()
-			or Pixel::Type::Color::GetRed()
-			*/
 			double _red;
-
-			/**
-			*  The green component for this Color
-			*  See Pixel::Type::Color::SetGreen()
-			or Pixel::Type::Color::GetGreen()
-			*/
 			double _green;
-
-			/**
-			*  The blue component for this Color
-			*  See Pixel::Type::Color::SetBlue()
-			or Pixel::Type::Color::GetBlue()
-			*/
 			double _blue;
-
 
 	};
 

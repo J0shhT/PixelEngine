@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Graphics/GuiService.cpp
+*/
+
 #include "Include/Graphics/GuiService.h"
 
 #include "Include/PixelError.h"
@@ -9,19 +19,23 @@ PIXEL_DECLARE_SINGLETON(Pixel::GuiService);
 Pixel::GuiService::GuiService()
 {
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::GuiService);
+	/*
 	if (FT_Init_FreeType(&_freeType))
 	{
 		PixelFatalError("Failed to initialize FreeType library");
 	}
 	_loadFonts();
+	*/
 }
 
 Pixel::GuiService::~GuiService()
 {
+	/*
 	if (FT_Done_FreeType(_freeType))
 	{
 		PixelFatalError("Failed to destroy FreeType library");
 	}
+	*/
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::GuiService);
 }
 
@@ -37,6 +51,23 @@ std::shared_ptr<Pixel::Object::GuiObject> Pixel::GuiService::GetGuiObjectById(co
 		return _guiObjects.at(id);
 	}
 	return nullptr;
+}
+
+std::shared_ptr<Pixel::Object::GuiObject> Pixel::GuiService::GetGuiObjectByName(const std::string& name) const
+{
+	for (auto iter = _guiObjects.cbegin(); iter != _guiObjects.cend(); iter++)
+	{
+		if (iter->second->GetName() == name)
+		{
+			return iter->second;
+		}
+	}
+	return nullptr;
+}
+
+size_t Pixel::GuiService::GetGuiObjectCount() const
+{
+	return _guiObjects.size();
 }
 
 bool Pixel::GuiService::DeleteGui(const std::string& objectId)
@@ -57,11 +88,12 @@ bool Pixel::GuiService::DeleteGui(std::shared_ptr<Pixel::Object::GuiObject> obje
 	return DeleteGui(object->GetId());
 }
 
+/*
 Pixel::Graphics::Font Pixel::GuiService::_loadFont(Pixel::FontFamily fontFamily, Pixel::FontSize fontSize)
 {
 	std::string fontFilePath = "";
 #ifdef _DEBUG
-	fontFilePath = "J:/PixelEngine/Dev/Release/";
+	fontFilePath = "J:/PixelEngine/Dev/Release/"; ///todo
 #endif
 	switch (fontFamily)
 	{
@@ -135,7 +167,9 @@ Pixel::Graphics::Font Pixel::GuiService::_loadFont(Pixel::FontFamily fontFamily,
 
 	return font;
 }
+*/
 
+/*
 std::map<Pixel::FontSize, Pixel::Graphics::Font> Pixel::GuiService::_loadFont(Pixel::FontFamily fontFamily)
 {
 	auto fontMap = std::map<Pixel::FontSize, Pixel::Graphics::Font>();
@@ -149,11 +183,14 @@ std::map<Pixel::FontSize, Pixel::Graphics::Font> Pixel::GuiService::_loadFont(Pi
 
 	return fontMap;
 }
+*/
 
+/*
 void Pixel::GuiService::_loadFonts()
 {
-	//_loadedFonts[Pixel::FontFamily::Arial] = _loadFont(Pixel::FontFamily::Arial);
+	_loadedFonts[Pixel::FontFamily::Arial] = _loadFont(Pixel::FontFamily::Arial);
 }
+*/
 
 void Pixel::GuiService::_addGuiObject(std::shared_ptr<Pixel::Object::GuiObject> object)
 {
@@ -164,4 +201,3 @@ void Pixel::GuiService::_addGuiObject(std::shared_ptr<Pixel::Object::GuiObject> 
 	}
 	_guiObjects[object->GetId()] = object;
 }
-

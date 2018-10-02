@@ -1,6 +1,17 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Type/Velocity.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
+
 #include "Include/Type/Position.h"
 
 namespace Pixel::Type

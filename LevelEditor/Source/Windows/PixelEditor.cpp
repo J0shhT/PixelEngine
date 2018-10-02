@@ -38,6 +38,8 @@ wxBEGIN_EVENT_TABLE(Pixel::Editor::CoreWindow, wxFrame)
 	EVT_MENU(ID_CoreWindow_SaveLevelNew, Pixel::Editor::CoreWindow::OnFileSaveAs)
 	EVT_MENU(ID_CoreWindow_Settings, Pixel::Editor::CoreWindow::OnFileSettings)
 	EVT_MENU(wxID_EXIT, Pixel::Editor::CoreWindow::OnFileExit)
+	//View Menu
+	EVT_MENU(ID_CoreWindow_DebugInfo, Pixel::Editor::CoreWindow::OnViewDebugInfo)
 	//Help Menu
 	EVT_MENU(wxID_ABOUT, Pixel::Editor::CoreWindow::OnHelpAbout)
 	//DevTest Menu
@@ -49,7 +51,6 @@ bool Pixel::Editor::App::OnInit()
 	//Create Pixel::App (required for Pixel Engine)
 	try {
 		Pixel::App* app = new Pixel::App(Pixel::WindowSubsystem::WxWidgets);
-		app->SetDebugGuiEnabled(true);
 
 		//Create PNG handler (for using wxBitmap with PNG files)
 		wxImage::AddHandler(new wxPNGHandler);
@@ -186,6 +187,15 @@ Pixel::Editor::CoreWindow::CoreWindow()
 	menuEdit->Enable(ID_CoreWindow_Duplicate, false);
 	////////////////////////////////////////////////////////////
 
+	// View Dropdown Menu //////////////////////////////////////
+	wxMenu *menuView = new wxMenu;
+
+	//View -> Debug Information
+	//wxMenuItem *menuView_debugInfo = new wxMenuItem(menuView, ID_CoreWindow_DebugInfo, "&Debug Information");
+	menuView->AppendCheckItem(ID_CoreWindow_DebugInfo, "&Debug Information\tCtrl+Shift+D", "Enable debugging information GUI");
+	menuView->Check(ID_CoreWindow_DebugInfo, false);
+	//menuView->Append(menuView_debugInfo);
+	////////////////////////////////////////////////////////////
 
 	// Help Dropdown Menu //////////////////////////////////////
 	wxMenu *menuHelp = new wxMenu;
@@ -210,6 +220,7 @@ Pixel::Editor::CoreWindow::CoreWindow()
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "&File");
 	menuBar->Append(menuEdit, "&Edit");
+	menuBar->Append(menuView, "&View");
 	menuBar->Append(menuHelp, "&Help");
 	menuBar->Append(menuDevTest, "&DevTest");
 	SetMenuBar(menuBar);
@@ -259,6 +270,10 @@ void Pixel::Editor::CoreWindow::OnFileSettings(wxCommandEvent& event)
 void Pixel::Editor::CoreWindow::OnFileExit(wxCommandEvent& event)
 {
 	Close(true);
+}
+void Pixel::Editor::CoreWindow::OnViewDebugInfo(wxCommandEvent& event)
+{
+	Pixel::App::Singleton()->SetDebugGuiEnabled(event.IsChecked());
 }
 void Pixel::Editor::CoreWindow::OnHelpAbout(wxCommandEvent & event)
 {

@@ -1,6 +1,17 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Type/WorldPosition.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
+
 #include "Include/Type/Position.h"
 
 namespace Pixel::Type
@@ -35,8 +46,6 @@ namespace Pixel::Type
 			*  Class deconstructor
 			*/
 			virtual ~WorldPosition();
-
-			/// todo: eventually add methods like WorldPosition to ScreenPosition conversions
 
 	};
 }

@@ -1,3 +1,14 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Type/Position.cpp
+*/
+
+#define _USE_MATH_DEFINES
 #include "Include/Type/Position.h"
 
 Pixel::Type::Position::Position() : _x{ 0.0 }, _y{ 0.0 }
@@ -128,7 +139,14 @@ double Pixel::Type::Position::GetMagnitude() const
 	return sqrt((_x * _x) + (_y * _y));
 }
 
+double Pixel::Type::Position::GetAngle(bool inDegrees) const
+{
+	if (inDegrees)
+		return tan(_y / _x) * 180.0 / M_PI;
+	return tan(_y / _x);
+}
+
 std::string Pixel::Type::Position::ToString() const
 {
 	return std::string("(") + std::to_string(_x) + std::string(", ") + std::to_string(_y) + std::string(")");
-}
+} 

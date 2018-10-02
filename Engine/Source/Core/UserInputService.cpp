@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/UserInputService.cpp
+*/
+
 #include "Include/Core/UserInputService.h"
 
 #include "Include/PixelError.h"
@@ -285,20 +295,24 @@ bool Pixel::UserInputService::IsKeyDown(Pixel::Key key) const
 			return _activeWxKeys.at(wxKey);
 		}
 	}
+	else
+	{
+		return false;
+	}
 }
 
-std::string Pixel::UserInputService::Bind(InputEventType type, InputEventCallback* callback)
+Pixel::InputEventCallbackId Pixel::UserInputService::Bind(InputEventType type, InputEventCallback* callback)
 {
 	if (_connectedCallbacks.find(type) == _connectedCallbacks.end())
 	{
-		_connectedCallbacks[type] = std::map<std::string, InputEventCallback*>();
+		_connectedCallbacks[type] = std::map<Pixel::InputEventCallbackId, InputEventCallback*>();
 	}
 	std::string uid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
-	_connectedCallbacks[type][uid] = callback;
+	_connectedCallbacks[type][(Pixel::InputEventCallbackId)uid] = callback;
 	return uid;
 }
 
-void Pixel::UserInputService::Unbind(InputEventType type, const std::string& id)
+void Pixel::UserInputService::Unbind(InputEventType type, Pixel::InputEventCallbackId id)
 {
 	if (_connectedCallbacks.find(type) != _connectedCallbacks.end())
 	{

@@ -24,6 +24,7 @@ namespace Pixel::Editor
 			void OnFileSaveAs(wxCommandEvent& event);
 			void OnFileSettings(wxCommandEvent& event);
 			void OnFileExit(wxCommandEvent& event);
+			void OnViewDebugInfo(wxCommandEvent& event);
 			void OnHelpAbout(wxCommandEvent& event);
 
 			void OnDevTestRandomRect(wxCommandEvent& event);

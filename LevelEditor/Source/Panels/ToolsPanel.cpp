@@ -74,12 +74,12 @@ void Pixel::Editor::ToolsPanel::OnSelectTool(wxRibbonToolBarEvent& event)
 		_objectToolbar->ToggleTool(ID_ToolsPanel_SizeTool, false);
 
 		//Enable Select Tool in engine
-		Pixel::SelectionService::Singleton()->EnableSelectTool(true);
+		Pixel::SelectionService::Singleton()->SetSelectToolEnabled(true);
 	}
 	else
 	{
 		//Disable Select Tool in engine
-		Pixel::SelectionService::Singleton()->EnableSelectTool(false);
+		Pixel::SelectionService::Singleton()->SetSelectToolEnabled(false);
 	}
 }
 
@@ -92,12 +92,12 @@ void Pixel::Editor::ToolsPanel::OnMoveTool(wxRibbonToolBarEvent & event)
 		_objectToolbar->ToggleTool(ID_ToolsPanel_SizeTool, false);
 
 		//Enable Move Tool in engine
-		Pixel::SelectionService::Singleton()->EnableMoveTool(true);
+		Pixel::SelectionService::Singleton()->SetMoveToolEnabled(true);
 	}
 	else
 	{
 		//Disable Move Tool in engine
-		Pixel::SelectionService::Singleton()->EnableMoveTool(false);
+		Pixel::SelectionService::Singleton()->SetMoveToolEnabled(false);
 	}
 }
 
@@ -110,11 +110,11 @@ void Pixel::Editor::ToolsPanel::OnSizeTool(wxRibbonToolBarEvent & event)
 		_objectToolbar->ToggleTool(ID_ToolsPanel_SelectTool, false);
 
 		//Enable Size Tool in engine
-		Pixel::SelectionService::Singleton()->EnableSizeTool(true);
+		Pixel::SelectionService::Singleton()->SetSizeToolEnabled(true);
 	}
 	else
 	{
 		//Disable Size Tool in engine
-		Pixel::SelectionService::Singleton()->EnableSizeTool(false);
+		Pixel::SelectionService::Singleton()->SetSizeToolEnabled(false);
 	}
 }

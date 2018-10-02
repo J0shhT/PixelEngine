@@ -16,6 +16,7 @@ enum
 	ID_CoreWindow_Paste,
 	ID_CoreWindow_Delete,
 	ID_CoreWindow_Duplicate,
+	ID_CoreWindow_DebugInfo,
 
 	ID_CoreWindow_DevTest_RandomRect,
 

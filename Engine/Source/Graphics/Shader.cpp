@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Graphics/Shader.cpp
+*/
+
 #include "Include/Graphics/Shader.h"
 
 #include "Include/PixelError.h"
@@ -30,8 +40,6 @@ Pixel::Graphics::ShaderType Pixel::Graphics::Shader::GetShaderType() const
 {
 	return _shaderType;
 }
-
-
 
 Pixel::Graphics::VertexShader::VertexShader()
 {
@@ -88,8 +96,6 @@ bool Pixel::Graphics::VertexShader::Load(std::string filePath)
 	return false;
 }
 
-
-
 Pixel::Graphics::FragmentShader::FragmentShader()
 {
 	_shaderType = Pixel::Graphics::ShaderType::VertexShader;
@@ -144,8 +150,6 @@ bool Pixel::Graphics::FragmentShader::Load(std::string filePath)
 	}
 	return false;
 }
-
-
 
 std::shared_ptr<Pixel::Graphics::Shader> Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType type)
 {

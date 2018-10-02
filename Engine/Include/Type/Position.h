@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Type/Position.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
@@ -137,13 +147,22 @@ namespace Pixel::Type
 
 			/**
 			*  Returns the total area occupied by this Position
+			*  This is equal x * y
 			*/
 			double GetArea() const;
 
 			/**
 			*  Returns the magnitude (total length) of this Position
+			*  This is equal to sqrt(x * x + y * y)
 			*/
 			double GetMagnitude() const;
+
+			/**
+			*  Returns the angle formed by the x and y components relative to the x axis
+			*  This is equal to the tangent of y/x
+			*  The angle returned is in radians, unless inDegrees is set to true
+			*/
+			double GetAngle(bool inDegrees = false) const;
 
 			/**
 			*  Returns a std::string of the (x, y) value components
@@ -152,20 +171,8 @@ namespace Pixel::Type
 
 		private:
 
-			/**
-			*  The X component for this Position
-			*  See Pixel::Type::Position::GetX()
-			or Pixel::Type::Position::SetX()
-			*/
 			double _x;
-
-			/**
-			*  The Y component for this Position
-			*  See Pixel::Type::Position::GetY()
-			or Pixel::Type::Position::SetY()
-			*/
 			double _y;
-
 
 	};
 

@@ -1,13 +1,22 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Graphics/RenderService.cpp
+*/
+
 #include "Include/Graphics/RenderService.h"
 
 #include "Include/PixelError.h"
 #include "Include/PixelOutput.h"
 #include "Include/Core/PixelApp.h"
+#include "Include/Core/SceneManager.h"
 
 #include "Include/Object/RenderableObject.h"
 #include "Include/Object/BasicTextGui.h"
-
-#include "Include/Core/SceneManager.h"
 
 #include "Include/Graphics/GuiService.h"
 
@@ -21,6 +30,8 @@ PIXEL_DECLARE_SINGLETON(Pixel::RenderService);
 Pixel::RenderService::RenderService()
 {
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::RenderService);
+
+	_backgroundColor = Pixel::Type::Color(0.25f);
 
 	//Create camera
 	_currentCamera = Pixel::SceneManager::Singleton()->CreateObject<Pixel::Object::Camera>();
@@ -51,7 +62,7 @@ void Pixel::RenderService::Initialize()
 	/* Load engine vertex shader */
 	auto vertexShader = Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType::VertexShader);
 #ifdef _DEBUG
-	vertexShader->Load("J:/PixelEngine/Dev/Release/Shaders/Vertex.glsl");
+	vertexShader->Load(DEBUG_BUILD_FILE_DIR "Shaders/Vertex.glsl");
 #else
 	vertexShader->Load("Shaders/Vertex.glsl");
 #endif
@@ -60,7 +71,7 @@ void Pixel::RenderService::Initialize()
 	/* Load engine fragment shader */
 	auto fragmentShader = Pixel::Graphics::CreateShader(Pixel::Graphics::ShaderType::FragmentShader);
 #ifdef _DEBUG
-	fragmentShader->Load("J:/PixelEngine/Dev/Release/Shaders/Fragment.glsl");
+	fragmentShader->Load(DEBUG_BUILD_FILE_DIR "Shaders/Fragment.glsl");
 #else
 	fragmentShader->Load("Shaders/Fragment.glsl");
 #endif
@@ -79,7 +90,6 @@ void Pixel::RenderService::Initialize()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//gluOrtho2D(-(float)_viewportSize.GetWidth() / (float)_viewportSize.GetHeight(), (float)_viewportSize.GetWidth() / (float)_viewportSize.GetHeight(), -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 
 	_isInitialized = true;
@@ -101,7 +111,7 @@ void Pixel::RenderService::SetupFrame()
 void Pixel::RenderService::Clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+	glClearColor(_backgroundColor.GetRed(), _backgroundColor.GetGreen(), _backgroundColor.GetBlue(), 1.0f);
 }
 
 void Pixel::RenderService::RenderWorldObjects()
@@ -134,16 +144,19 @@ void Pixel::RenderService::RenderScreenGuis()
 	for (auto iter = guiObjects.cbegin(); iter != guiObjects.cend(); ++iter)
 	{
 		std::shared_ptr<Pixel::Object::GuiObject> object = iter->second;
-		if (object->IsA<Pixel::Object::BasicTextGui>())
+		if (object->IsVisible())
 		{
-			//BasicTextGui object's don't use shaders
-			glUseProgram(0);
-			object->Render();
-			glUseProgram(_glProgram);
-		}
-		else
-		{
-			object->Render();
+			if (object->IsA<Pixel::Object::BasicTextGui>())
+			{
+				//BasicTextGui object's don't use shaders
+				glUseProgram(0);
+				object->Render();
+				glUseProgram(_glProgram);
+			}
+			else
+			{
+				object->Render();
+			}
 		}
 		object.reset();
 	}
@@ -152,21 +165,64 @@ void Pixel::RenderService::RenderScreenGuis()
 
 void Pixel::RenderService::RenderSystemGuis()
 {
+
+}
+
+void Pixel::RenderService::RenderDebugGui()
+{
 	glUseProgram(0);
 	double lastPhysicsFrameDelta = Pixel::PhysicsService::Singleton()->GetLastPhysicsFrameDelta();
+	
+	/* Render debug GUI backdrop */
+	// Yeah, I know fixed function pipeline is bad.
+	glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(0.01f, 0.01f);
+		glVertex2f(0.01f, 0.35f);
+		glVertex2f(0.27f, 0.35f);
+		glVertex2f(0.27f, 0.35f);
+		glVertex2f(0.27f, 0.01f);
+		glVertex2f(0.01f, 0.01f);
+	glEnd();
 
-	glColor3f(1.0f, 0.0f, 1.0f);
-
-	glRasterPos2f(0.01f, 0.04f);
-	std::string fpsCounterText = std::to_string(static_cast<int>(1.0 / lastPhysicsFrameDelta)) + std::string(" FPS");
-	for (auto iter = fpsCounterText.begin(); iter != fpsCounterText.end(); iter++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
-	}
-
-	glRasterPos2f(0.01f, 0.075f);
-	std::string frameDeltaSecText = std::to_string(lastPhysicsFrameDelta) + std::string("s");
-	for (auto iter = frameDeltaSecText.begin(); iter != frameDeltaSecText.end(); iter++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *iter);
+	/* Render debug GUI text */
+	std::vector<std::string> items = {
+		"Pixel Engine " PIXEL_ENGINE_VERSION "",
+		"",
+		/*
+		"---- Render ----",
+		"Timing: " + std::string("(todo)"),
+		"FPS: " + std::string("(todo)"),
+		*/
+		"---- Physics ----",
+		//"Timing: " + std::string("(todo)"),
+		"Frame delta: " + std::to_string(lastPhysicsFrameDelta) + std::string("s"),
+		/*
+		"---- Sound ----",
+		"Timing: " + std::string("(todo)"),
+		"Playing: " + std::string("(todo)"),
+		"---- Events ----",
+		"Timing: " + std::string("(todo)"),
+		"Binded: " + std::string("(todo)"),
+		*/
+		"---- Game ----",
+		"Game Objects: " + std::to_string(Pixel::SceneManager::Singleton()->GetObjectCount()),
+		"GUI Objects: " + std::to_string(Pixel::GuiService::Singleton()->GetGuiObjectCount()),
+		/*
+		"---- Network ----",
+		"HTTP GET: " + std::string("(todo)"),
+		"HTTP POST: " + std::string("(todo)"),
+		*/
+	};
+	size_t index = 1;
+	glColor3f(0.0f, 0.0f, 0.0f);
+	for (auto iter = items.cbegin(); iter != items.cend(); iter++)
+	{
+		glRasterPos2f(0.02f, 0.045f*index);
+		for (auto stringIter = (*iter).begin(); stringIter != (*iter).end(); stringIter++) {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *stringIter);
+		}
+		index++;
 	}
 }
 
@@ -241,6 +297,16 @@ void Pixel::RenderService::SetCurrentCamera(std::shared_ptr<Pixel::Object::Camer
 std::shared_ptr<Pixel::Object::Camera> Pixel::RenderService::GetCurrentCamera() const
 {
 	return _currentCamera;
+}
+
+void Pixel::RenderService::SetBackgroundColor(Pixel::Type::Color color)
+{
+	_backgroundColor = color;
+}
+
+Pixel::Type::Color Pixel::RenderService::GetBackgroundColor() const
+{
+	return _backgroundColor;
 }
 
 void Pixel::RenderService::SetWireframeEnabled(bool enabled)

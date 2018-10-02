@@ -1,7 +1,15 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/PixelError.cpp
+*/
+
 #include "Include/PixelError.h"
 
-#include <SDL/SDL.h>
-#include <Windows.h>
 #include <tchar.h>
 
 Pixel::Exception::FatalError::FatalError(std::string msg, const unsigned int line, std::string file, std::string func) : _msg(msg), _line(line), _file(file), _func(func)
@@ -39,16 +47,17 @@ Pixel::Exception::FatalError::FatalError(std::string msg, const unsigned int lin
 		MB_OK | MB_ICONERROR
 	);
 }
+
 std::string Pixel::Exception::FatalError::what() const
 {
 	std::string msg = std::string("Fatal error occured: ") + _msg;
 	return msg;
 }
 
-
 Pixel::Error::Error() : Error("An unknown error occured")
 {
 }
+
 Pixel::Error::Error(std::string msg) : _msg(msg)
 {
 	//Log error to LogService and output
@@ -56,15 +65,16 @@ Pixel::Error::Error(std::string msg) : _msg(msg)
 	Pixel::LogService::Singleton()->Log(this, logMessage);
 	Pixel::StandardOut::Singleton()->PrintSilent(Pixel::OutputType::Error, msg.c_str());
 }
+
 std::string Pixel::Error::what() const
 {
 	return _msg;
 }
 
-
 Pixel::Warning::Warning() : Warning("An unknown error occured")
 {
 }
+
 Pixel::Warning::Warning(std::string msg) : _msg(msg)
 {
 	//Log warning to LogService and output
@@ -72,6 +82,7 @@ Pixel::Warning::Warning(std::string msg) : _msg(msg)
 	Pixel::LogService::Singleton()->Log(this, logMessage);
 	Pixel::StandardOut::Singleton()->PrintSilent(Pixel::OutputType::Warning, msg.c_str());
 }
+
 std::string Pixel::Warning::what() const
 {
 	return _msg;

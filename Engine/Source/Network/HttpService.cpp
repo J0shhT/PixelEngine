@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Network/HttpService.cpp
+*/
+
 #include "Include/Network/HttpService.h"
 
 #include "Include/PixelError.h"
@@ -38,7 +48,7 @@ Pixel::HttpResponse Pixel::HttpService::Get(std::string url)
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 #endif
 
@@ -118,7 +128,7 @@ Pixel::HttpResponse Pixel::HttpService::Post(std::string url, std::string &data)
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 #endif
 

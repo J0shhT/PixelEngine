@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Object/RenderableObject.cpp
+*/
+
 #include "Include/Object/RenderableObject.h"
 
 #include "Include/PixelOutput.h"

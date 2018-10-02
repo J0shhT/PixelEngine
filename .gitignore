@@ -1,13 +1,15 @@
 
 # Build folders
 Build_LevelEditor/
+Build_PongDemo/
 Build_SDK/
-Build_Test/
 
 # Pixel Engine files+folders
 Engine/Dependencies/
-PixelEngine.rar
 git_commit.bat
+
+# Demo files+folders
+Demo/Pong/PixelEngine/
 
 # Visual studio folders
 [Dd]ebug/
@@ -32,3 +34,4 @@ x86/
 *.idb
 *.res
 *.log
+*.rar

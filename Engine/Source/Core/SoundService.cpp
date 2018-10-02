@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/SoundService.cpp
+*/
+
 #include "Include/Core/SoundService.h"
 
 #include "Include/PixelError.h"

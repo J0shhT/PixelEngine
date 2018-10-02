@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/LogService.cpp
+*/
+
 #include "Include/Core/LogService.h"
 
 #include <boost/lexical_cast.hpp>
@@ -7,13 +17,14 @@
 
 #include "Include/PixelError.h"
 
-//#define UNIQUE_LOG_FILES
+#define UNIQUE_LOG_FILES
 
 PIXEL_DECLARE_AUTOSINGLETON(Pixel::LogService);
 
 Pixel::LogService::LogService()
 {
 	PIXEL_SINGLETON_CONSTRUCTOR(Pixel::LogService);
+	_enableNormalLogReporting = false;
 }
 
 Pixel::LogService::~LogService()
@@ -24,7 +35,9 @@ Pixel::LogService::~LogService()
 void Pixel::LogService::UploadLogs(Pixel::LogType logType)
 {
 #ifdef UNIQUE_LOG_FILES
-	std::string logGuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+	std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
+	auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(currentTime.time_since_epoch()).count();
+	std::string logGuid = std::to_string(timestamp);
 #else
 	std::string logGuid = "PixelEngine";
 #endif
@@ -89,4 +102,14 @@ void Pixel::LogService::Log(void* caller, const std::string &message)
 void Pixel::LogService::Log(const std::string &message)
 {
 	Log(nullptr, message);
+}
+
+void Pixel::LogService::SetNormalLogReportingEnabled(bool value)
+{
+	_enableNormalLogReporting = value;
+}
+
+bool Pixel::LogService::IsNormalLogReportingEnabled() const
+{
+	return _enableNormalLogReporting;
 }

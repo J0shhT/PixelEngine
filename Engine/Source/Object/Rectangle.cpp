@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Object/Rectangle.cpp
+*/
+
 #include "Include/Object/Rectangle.h"
 
 #include "Include/PixelOutput.h"
@@ -22,18 +32,21 @@ void Pixel::Object::Rectangle::StepPhysics(double frameDelta)
 {
 	if (IsAnchored())
 		return;
-	Pixel::Type::Velocity velocity = GetVelocity();
 	Pixel::Type::Position position = GetPosition();
+	Pixel::Type::Velocity velocity = GetVelocity();
 	if (velocity.GetMagnitude() != 0.0)
 	{
+		//Collision check
+		///todo: move all collision detection into PhysicsService?
+		_checkCollisions();
+
+		position = GetPosition();
+		velocity = GetVelocity();
 		double xPosition = position.GetX();
 		double yPosition = position.GetY();
 		double xVelocity = velocity.GetX();
 		double yVelocity = velocity.GetY();
 
-		//Collision check
-		///todo: move all collision detection into PhysicsService?
-		_checkCollisions();
 		if (_hasCollisionTop && yVelocity < 0.0)
 		{
 			yVelocity = 0.0;
@@ -233,7 +246,7 @@ void Pixel::Object::Rectangle::_checkCollisions()
 					if (isTouching)
 					{
 						//Object is colliding, invoke CollisionEvent
-						Pixel::Event::Event e = Pixel::Event::Event();
+						Pixel::Event e = Pixel::Event();
 						e.type = Pixel::EventType::CollisionEvent;
 						e.object = weak_from_this();
 						e.collidedObject = physicsObject;
@@ -245,7 +258,7 @@ void Pixel::Object::Rectangle::_checkCollisions()
 					if (isTouching)
 					{
 						//Object isn't collidable, but is overlapping, invoke IntersectionEvent
-						Pixel::Event::Event e = Pixel::Event::Event();
+						Pixel::Event e = Pixel::Event();
 						e.type = Pixel::EventType::IntersectionEvent;
 						e.object = weak_from_this();
 						e.collidedObject = physicsObject;
@@ -261,4 +274,3 @@ void Pixel::Object::Rectangle::_checkCollisions()
 	_hasCollisionLeft = hasCollisionLeft;
 	_hasCollisionRight = hasCollisionRight;
 }
-

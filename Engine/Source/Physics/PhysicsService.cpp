@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Physics/PhysicsService.cpp
+*/
+
 #include "Include/Physics/PhysicsService.h"
 
 #include "Include/PixelError.h"
@@ -28,7 +38,7 @@ void Pixel::PhysicsService::TimeFrame()
 	frameLast = high_resolution_clock::now();
 }
 
-void Pixel::PhysicsService::SimulateGameObjects()
+void Pixel::PhysicsService::SimulateWorldObjects()
 {
 	auto gameObjects = Pixel::SceneManager::Singleton()->GetObjects();
 	for (auto iter = gameObjects.cbegin(); iter != gameObjects.cend(); ++iter)
@@ -54,4 +64,3 @@ double Pixel::PhysicsService::GetLastPhysicsFrameDelta() const
 {
 	return _lastFrameDelta;
 }
-

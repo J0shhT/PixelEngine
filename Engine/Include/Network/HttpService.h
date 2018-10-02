@@ -1,15 +1,26 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Network/HttpService.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
 
-namespace Pixel {
-
 #pragma warning(push)
 #pragma warning(disable: 4251)
+
+namespace Pixel {
+
 	/**
-	*  Represents and contains a response from a web server
+	*  The Pixel::HttpResponse struct represents and contains a response from a web server.
 	*/
-	struct PIXEL_API HttpResponse
+	struct HttpResponse
 	{
 		bool success; //* Set to true if the request was a success
 		std::map<std::string, std::string> headers; //* The response headers from the server (stored as key-value pairs)
@@ -19,21 +30,10 @@ namespace Pixel {
 	};
 
 	/**
-	*  Contains specific information relating to a URL
-	*  See Pixel::HttpService::GetInformationFromURL()
-	*/
-	struct PIXEL_API URL
-	{
-		std::string protocol;
-		std::string domain;
-		std::string path;
-		std::string parameters;
-		bool isValid;
-	};
-#pragma warning(pop)
-
-	/**
-	*  TODO
+	*  The Pixel::HttpService is a singleton service used to send
+	HTTP requests to outside servers or websites.
+	*  Currently only supports GET and POST.
+	*  Supports SSL (https).
 	*/
 	class PIXEL_API HttpService final
 	{
@@ -53,22 +53,22 @@ namespace Pixel {
 			~HttpService();
 
 			/**
-			*  Sends an HTTP GET request to the specified url
+			*  Sends an HTTP GET request to the specified url, and returns the response.
 			*/
 			Pixel::HttpResponse Get(std::string url);
 
 			/**
-			*  Sends an HTTP POST request to the specified url
+			*  Sends an HTTP POST request to the specified url, and returns the response.
 			*  Data is sent in application/x-www-form-urlencoded format (ex: "Hello=World&Test=123")
 			*/
 			Pixel::HttpResponse Post(std::string url, std::string &data);
 
 		private:
 
-			/**
-			*  Internal usage only
-			*/
 			static size_t _curlDataWriteCallback(char* buf, size_t size, size_t nmemb, void* userp);
-		};
+
+	};
 
 }
+
+#pragma warning(pop)

@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Core/PixelApp.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
@@ -5,11 +15,10 @@
 #include "Include/Type/Position.h"
 
 #include <wx/wx.h>
-
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
-#undef main
 
+#undef main
 #undef CreateWindow
 
 #pragma warning(push)
@@ -18,7 +27,8 @@
 namespace Pixel {
 
 	/**
-	*  TODO
+	*  The Pixel::WindowSubsystem contains the windowing subsystem
+	libraries that Pixel Engine supports. 
 	*/
 	enum class WindowSubsystem
 	{
@@ -27,9 +37,22 @@ namespace Pixel {
 	};
 
 	/**
-	*  TODO
+	*  The Pixel::App is the main class for Pixel Engine. Every application
+	that uses Pixel Engine must construct a Pixel::App class manually.
+
+	*  The Pixel::App class is responsible for initializing all engine subsystems.
+
+	*  The Pixel::App is where all the high-level magic happens, such as the game-loop.
+
+	*  Pixel Engine is able to deal with either SDL or WxWidgets as a windowing subsystem.
+	The default windowing subsystem is SDL, but you can change this in the constructor
+	of Pixel::App.
+
+	*  The SDL subsystem is recommended when you are just creating a game with Pixel Engine.
+	You can use WxWidgets subsystem if you require window GUI interfaces in your program, like
+	if you were creating a level editor.
 	*/
-	class PIXEL_API App 
+	class PIXEL_API App final
 	{
 
 		PIXEL_DEFINE_SINGLETON(Pixel::App);
@@ -44,21 +67,21 @@ namespace Pixel {
 			/**
 			*  Class deconstructor
 			*/
-			virtual ~App();
+			~App();
 
 			/**
 			*  Creates a window for the Pixel::App
 			*  The window is hidden by default when created.
 			*  Only one window can be created per Pixel::App
-			*  This function can throw a Pixel::Exception::FatalError
-			and a Pixel::Exception::RuntimeError upon certain errors
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void CreateWindow(std::string title, int width, int height);
 
 			/**
 			*  Destroys the current window for the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void DestroyWindow();
 
@@ -71,29 +94,36 @@ namespace Pixel {
 			void SetWxWidgetsWindow(wxWindow*);
 
 			/**
-			*  Processes all events for this Pixel::App
-			*  This includes window events and game events.
-			*  This also processes and calls custom connected 
-			event functions that were made by the user.
+			*  Processes all events for this Pixel::App, this includes window events,
+			input events, game events, and custom events.
 			*/
 			void ProcessEvents();
 
 			/**
-			*  Simulates exactly one physics frame
+			*  Simulates exactly one physics frame.
+			*  Physics is simulated in this order:
+			- Time and setup frame
+			- Simulate world objects
+			- Simulate system objects
+			- Update current camera
 			*/
 			void StepPhysics();
 
 			/**
-			*  Renders exactly one graphics frame
-			*  This function can throw a Pixel::Exception::RuntimeError
-			   if there is no current window associated with the app.
-			*  This function can be used without a window being created
-			if Pixel::App::UseExternalWindowSystem() is set to true.
+			*  Renders exactly one graphics frame.
+			*  Rendering is handled in this order:
+			- Setup frame
+			- Clear screen
+			- Render world objects
+			- Render system objects
+			- Render screen guis
+			- Render system guis
+			- Swap frames
 			*/
 			void Render();
 
 			/**
-			*  TODO
+			*  Updates the sound engine for the game.
 			*/
 			void UpdateSound();
 
@@ -104,9 +134,8 @@ namespace Pixel {
 
 			/**
 			*  Starts Pixel Engine's pre-made game loop.
-			*  This function does not return until the user
-			requests to close the application or the game
-			loop is manually stopped.
+			*  This function does not return until the user requests to close 
+			the application or the game loop is manually stopped.
 			*/
 			void StartGameLoop();
 
@@ -116,42 +145,42 @@ namespace Pixel {
 			void StopGameLoop();
 
 			/**
-			*  Closes and uninitializes all engine systems relating to this Pixel::App
+			*  Closes and uninitializes all engine systems relating to this Pixel::App.
 			*/
 			void Close();
 
 			/**
-			*  Sets the title bar for the current window of the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  Sets the title bar for the current window of the Pixel::App.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void SetWindowTitle(std::string);
 			
 			/**
 			*  Sets the size for the current window of the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void SetWindowSize(int width, int height);
 
 			/**
 			*  Sets the width for the current window of the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void SetWindowWidth(int);
 
 			/**
 			*  Sets the height for the current window of the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void SetWindowHeight(int);
 
 			/**
 			*  Sets the visibility for the current window of the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			void SetWindowVisible(bool);
 
@@ -162,37 +191,38 @@ namespace Pixel {
 			void SetDebugGuiEnabled(bool);
 
 			/**
+			*  Returns whether or not the Pixel Engine Debug GUI is enabled.
+			*/
+			bool IsDebugGuiEnabled() const;
+
+			/**
 			*  Gets the X position of the window for the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			int GetWindowPositionX() const;
 
 			/**
 			*  Gets the Y position of the window for the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			int GetWindowPositionY() const;
 
 			/**
 			*  Gets the position of the window for the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
+			*  This function should only be used if you are using the
+			SDL windowing subsystem.
 			*/
 			Pixel::Type::Position GetWindowPosition() const;
 
 			/**
 			*  Gets the width of the window for the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
 			*/
 			int GetWindowWidth() const;
 
 			/**
 			*  Gets the height of the window for the Pixel::App
-			*  This function can throw a Pixel::Exception::RuntimeError
-			if there is no current window associated with the app.
 			*/
 			int GetWindowHeight() const;
 
@@ -224,82 +254,35 @@ namespace Pixel {
 
 		private:
 
-			/**
-			*  The windowing subsystem to be used by the engine.
-			*  The window subsystem is set via a parameter in the constructor
-			of Pixel::App, the default is SDL.
-			*  See Pixel::WindowSubsystem enum for available subsystems.
-			*/
 			Pixel::WindowSubsystem _subsystem;
-
-			/**
-			*  For internal usage to check whether or not a window has
-			been created for this Pixel::App
-			*  See Pixel::App::CreateWindow()
-			*/
 			bool _hasWindow = false;
-
-			/**
-			*  The title set for the window related to this Pixel::App
-			*  See Pixel::App::SetWindowTitle()
-			*/
 			std::string _windowTitle;
-
-			/**
-			*  The width for the window size related to this Pixel::App
-			*  See Pixel::App::SetWindowWidth()
-			*/
 			int _windowWidth;
-
-			/**
-			*  The height for the window size related to this Pixel::App
-			*  See Pixel::App::SetWindowHeight()
-			*/
 			int _windowHeight;
-
-			/**
-			*  Whether or not the window for this Pixel::App is visible.
-			*  See Pixel::App::SetWindowVisible()
-			*/
 			bool _isWindowVisible = false;
-
-			/**
-			*  A pointer to the wxWindow object (internal usage only)
-			*  See Pixel::App::SetWxWidgetsWindow()
-			*/
-			wxWindow* _wxWindow = nullptr;
-
-			/**
-			*  A pointer to the SDL_Window object (internal usage only)
-			*  See Pixel::App::CreateWindow()
-			*/
-			SDL_Window* _window = nullptr;
-
-			/**
-			*  A SDL_SysWMinfo struct containing SDL info (internal usage only)
-			*/
-			SDL_SysWMinfo _SDLSysInfo;
-
-			/**
-			*  Whether or not the game was requested to be closed
-			either via the user or an internal function call
-			*/
 			bool _closeRequested = false;
-
-			/**
-			*  Whether or not the engine is currently running the
-			premade game loop (internal usage only)
-			*  See Pixel::App::StartGameLoop()
-			*/
 			bool _autoGameLoop = false;
-
-			/**
-			*  Whether or not to display debug information on screen
-			*  See Pixel::App::SetDebugGuiEnabled()
-			*/
 			bool _debugGuiEnabled = false;
 
+			wxWindow* _wxWindow = nullptr;
+			SDL_Window* _window = nullptr;
+			SDL_SysWMinfo _SDLSysInfo;
+
 	};
+
+}
+
+namespace Pixel {
+
+	/**
+	*  Validates whether or not the specified engine version
+	is compatible with the loaded engine DLL.
+	*  This function should always be called at the start of
+	your application.
+	*  This function throws a Pixel::Exception::FatalError
+	if the check fails.
+	*/
+	PIXEL_API void ValidateEngineVersion(std::string version);
 
 }
 

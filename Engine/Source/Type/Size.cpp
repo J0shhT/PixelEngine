@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Type/Size.cpp
+*/
+
 #include "Include/Type/Size.h"
 
 Pixel::Type::Size::Size() : _width{ 0.0 }, _height{ 0.0 }

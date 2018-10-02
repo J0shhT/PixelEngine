@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Object/Camera.cpp
+*/
+
 #include "Include/Object/Camera.h"
 
 #include "Include/PixelOutput.h"
@@ -107,4 +117,3 @@ void Pixel::Object::Camera::Update(double frameDelta)
 		}
 	}
 }
-

@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Core/ContentProvider.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
@@ -7,39 +17,99 @@
 #include <GL/glut.h>
 #include <fmod/fmod.hpp>
 
+#pragma warning(push)
+#pragma warning(disable: 4251)
+
 namespace Pixel {
 
+	/**
+	*  A unique id representing a piece of content in the ContentProvider.
+	*/
 	typedef std::string ContentId;
 
 	/**
-	*  TODO
+	*  The Pixel::ContentType enum is used to specify what type
+	of content a Pixel::Content struct is representing.
 	*/
 	enum class ContentType
 	{
-		Null,
-		Text,
-		Texture,
-		Sound
+		Null, //* Content that is not associated with anything, such as if an error occurs.
+		Text, //* Content that represents a basic file in text form.
+		Texture, //* Content that represents a texture to be rendered by the engine (png, jpg, etc).
+		Sound //* Content that represents a sound file to be played by the engine (mp3, wav, etc).
 	};
 
 	/**
-	*  TODO
+	*  The Pixel::Content struct is used to represent a piece of
+	content loaded by the ContentProvider service.
 	*/
 	struct Content
 	{
-		Pixel::ContentType type = Pixel::ContentType::Null;
-		Pixel::ContentId id;
-		std::string filePath;
+		Pixel::ContentType type = Pixel::ContentType::Null; //* The type of content this struct is representing.
+		Pixel::ContentId id; //* The unique ID representing this piece of content in the ContentProvider.
+		std::string filePath; //* The file path associated with this piece of content.
+
+		/**
+		*  The full file contents of this piece of content.
+		*  This property is only available for:
+		ContentType::Text
+		*/
 		std::string fileContents;
+
+		/**
+		*  The width for this piece of content.
+		*  This property is only available for:
+		ContentType::Texture
+		*/
 		int width;
+
+		/**
+		*  The height for this piece of content.
+		*  This property is only available for:
+		ContentType::Texture
+		*/
 		int height;
+
+		/**
+		*  The internal OpenGL texture ID for this content.
+		*  This property is only available for:
+		ContentType::Texture
+		*/
 		GLuint glTextureId;
+
+		/**
+		*  The internal FMOD sound class (pointer) for this content.
+		*  This property is only available for:
+		ContentType::Sound
+		*/
 		FMOD::Sound* fmodSound = nullptr;
+
+		/**
+		*  The internal FMOD channel (pointer) for this content.
+		*  This property is only available for:
+		ContentType::Sound
+		*/
 		FMOD::Channel* fmodChannel = nullptr;
 	};
 
 	/**
-	*  TODO
+	*  The Pixel::ContentProvider is a singleton service used to load, manage,
+	and cache content into the engine to be used (such as textures, sounds, etc).
+
+	*  Content is loaded via the various loading methods of ContentProvider such
+	as ContentProvider::LoadTextureFile() or ContentProvider::LoadTextFile()
+
+	*  All loading methods will return a Pixel::ContentId, which is a unique
+	id that represents a peice of content managed by the ContentProvider.
+
+	*  To fetch the loaded content, you must use ContentProvider::Get(contentId).
+
+	*  When fetching (and loading) content, the ContentProvider automatically checks
+	if you already previously loaded the content (cache system). If the content is
+	already loaded, it will not load it again and instead just fetch the already
+	loaded content.
+
+	*  You can choose to manually unload content with ContentProvider::FreeContent()
 	*/
 	class PIXEL_API ContentProvider final
 	{
@@ -59,37 +129,54 @@ namespace Pixel {
 			~ContentProvider();
 
 			/**
-			*  TODO
+			*  Returns true if the specified ContentId is binded to an existing
+			piece of content managed by the ContentProvider.
 			*/
 			bool DoesContentExist(Pixel::ContentId);
 
 			/**
-			*  TODO
+			*  Returns true if the content is already been loaded by the ContentProvider
+			using the specified identifier.
+			*  The identifier parameter is whatever you used to originally load
+			the content, which is usually the file path.
 			*/
 			bool IsContentCached(std::string identifier);
 
 			/**
-			*  TODO
+			*  Unloads the content binded to the specified ContentId.
 			*/
 			void FreeContent(Pixel::ContentId);
 
 			/**
-			*  TODO
+			*  Returns the piece of content binded to the specified ContentId.
+			*  If an error occurs, a Pixel::Content struct with a Null ContentType
+			will be returned.
 			*/
 			const Pixel::Content* const Get(Pixel::ContentId);
 
 			/**
-			*  TODO
+			*  Loads a file as a basic text file from the specified file path.
 			*/
 			Pixel::ContentId LoadTextFile(std::string filePath);
 
 			/**
-			*  TODO
+			*  Loads an image as a renderable OpenGL texture from the specified file path.
+			*  Supported image file formats:
+			- BMP (non-1bpp, non-RLE)
+			- PNG (non-interlaced)
+			- JPG (JPEG baseline)
+			- TGA (greyscale, RGB, RGBA or indexed, uncompressed or RLE)
+			- DDS (DXT1/2/3/4/5, uncompressed, cubemaps, can't read 3D DDS files)
+			- HDR (converted to LDR)
+			- PSD
 			*/
 			Pixel::ContentId LoadTextureFile(std::string filePath);
 
 			/**
-			*  TODO
+			*  Loads a sound file as a playable FMOD sound from the specified file path.
+			*  Supported sound file formats:
+			- AIFF, ASF, ASX, DLS, FLAC, FSB, IT, M3U, MIDI, MOD, MP2, MP3, Ogg Vorbis, 
+			PLS, S3M, VAG, WAV, WAX, WMA, XM
 			*/
 			Pixel::ContentId LoadSoundFile(std::string filePath);
 
@@ -102,3 +189,5 @@ namespace Pixel {
 	};
 
 }
+
+#pragma warning(pop)

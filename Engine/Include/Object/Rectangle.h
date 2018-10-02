@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Include/Object/Rectangle.h
+*/
+
 #pragma once
 
 #include "Include/Common.h"
@@ -7,10 +17,13 @@
 namespace Pixel::Object {
 
 	/**
-	*  TODO
+	*  The Object::Rectangle is a physical game object
+	that takes the form of a rectangle.
+	*  Rectangles are made from 2 triangles (6 verticies).
 	*/
 	class PIXEL_API Rectangle : public PhysicalObject
 	{
+
 		PIXEL_DEFINE_OBJECT(Rectangle);
 
 		public:
@@ -26,12 +39,12 @@ namespace Pixel::Object {
 			virtual ~Rectangle();
 
 			/**
-			*  TODO
+			*  Steps through one physics frame of this rectangle.
 			*/
 			void StepPhysics(double frameDelta);
 
 			/**
-			*  TODO
+			*  Renders one frame of this rectangle.
 			*/
 			void Render();
 

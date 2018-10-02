@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Object/Object.cpp
+*/
+
 #include "Include/Object/Object.h"
 
 #include "Include/PixelOutput.h"
@@ -77,7 +87,7 @@ bool Pixel::Object::Object::IsDeleted()
 	return _isDeleted;
 }
 
-void Pixel::Object::Object::_invokeEvent(Pixel::Event::Event e) const
+void Pixel::Object::Object::_invokeEvent(Pixel::Event e) const
 {
 	if (_connectedEvents.find(e.type) != _connectedEvents.end())
 	{

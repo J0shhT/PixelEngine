@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/SceneManager.cpp
+*/
+
 #include "Include/Core/SceneManager.h"
 
 #include "Include/PixelError.h"
@@ -25,13 +35,30 @@ const std::map<std::string, std::shared_ptr<Pixel::Object::Object>>& Pixel::Scen
 	return _objects;
 }
 
-std::shared_ptr<Pixel::Object::Object> Pixel::SceneManager::GetObjectById(const std::string &id) const
+std::shared_ptr<Pixel::Object::Object> Pixel::SceneManager::GetObjectById(const std::string& id) const
 {
 	if (_objects.count(id) > 0)
 	{
 		return _objects.at(id);
 	}
 	return nullptr;
+}
+
+std::shared_ptr<Pixel::Object::Object> Pixel::SceneManager::GetObjectByName(const std::string& name) const
+{
+	for (auto iter = _objects.cbegin(); iter != _objects.cend(); iter++)
+	{
+		if (iter->second->GetName() == name)
+		{
+			return iter->second;
+		}
+	}
+	return nullptr;
+}
+
+size_t Pixel::SceneManager::GetObjectCount() const
+{
+	return _objects.size();
 }
 
 bool Pixel::SceneManager::DeleteObject(const std::string& objectId)

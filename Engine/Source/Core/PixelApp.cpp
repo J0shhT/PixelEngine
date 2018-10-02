@@ -1,3 +1,13 @@
+/*
+	Pixel Engine
+	https://github.com/J0shhT/PixelEngine/
+
+	Developed by Josh Theriault, 2018
+	Licensed under GNU General Public License v3.0
+
+	/Source/Core/PixelApp.cpp
+*/
+
 #include "Include/Core/PixelApp.h"
 
 #include "Include/PixelError.h"
@@ -58,7 +68,8 @@ Pixel::App::~App()
 
 	PIXEL_SINGLETON_DECONSTRUCTOR(Pixel::App);
 
-	Pixel::LogService::Singleton()->UploadLogs();
+	if (Pixel::LogService::Singleton()->IsNormalLogReportingEnabled())
+		Pixel::LogService::Singleton()->UploadLogs();
 }
 
 void Pixel::App::CreateWindow(std::string title, int width, int height)
@@ -177,7 +188,7 @@ void Pixel::App::StepPhysics()
 
 	//Simulate game
 	physicsService->TimeFrame();
-	physicsService->SimulateGameObjects();
+	physicsService->SimulateWorldObjects();
 	physicsService->SimulateSystemObjects();
 
 	//Update camera
@@ -215,10 +226,9 @@ void Pixel::App::Render()
 	gluOrtho2D(0.0f, 1.0f, 1.0f, 0.0f);
 
 	renderService->RenderScreenGuis();
-	if (_debugGuiEnabled)
-	{
-		renderService->RenderSystemGuis();
-	}
+	renderService->RenderSystemGuis();
+	if (IsDebugGuiEnabled())
+		renderService->RenderDebugGui();
 
 	if (IsSDL())
 		SDL_GL_SwapWindow(_window);
@@ -368,6 +378,11 @@ void Pixel::App::SetDebugGuiEnabled(bool enabled)
 	_debugGuiEnabled = enabled;
 }
 
+bool Pixel::App::IsDebugGuiEnabled() const
+{
+	return _debugGuiEnabled;
+}
+
 int Pixel::App::GetWindowPositionX() const
 {
 	if (!IsSDL())
@@ -466,5 +481,20 @@ HWND Pixel::App::GetWindowHandle() const
 	else if (IsWxWidgets())
 	{
 		return (HWND)_wxWindow->GetHandle();
+	}
+	else
+	{
+		return HWND();
+	}
+}
+
+void Pixel::ValidateEngineVersion(std::string version)
+{
+	if (version != PIXEL_ENGINE_VERSION_INTERNAL)
+	{
+		throw Pixel::Exception::FatalError(
+			"This program was created using a version of Pixel Engine that is no longer compatible with the loaded PixelEngine.dll file. "
+			"Please upgrade the program to use version " PIXEL_ENGINE_VERSION_INTERNAL " of Pixel Engine."
+		);
 	}
 }
