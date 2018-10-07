@@ -22,6 +22,9 @@ Pixel::Object::PhysicalObject::PhysicalObject()
 	_color = Pixel::Type::Color(1.0, 1.0, 1.0);
 	_isSolid = true;
 	_isAnchored = false;
+	_textureMode = Pixel::TextureMode::Stretch;
+	_textureRepeatX = 1.0f;
+	_textureRepeatY = 1.0f;
 }
 
 Pixel::Object::PhysicalObject::~PhysicalObject()
@@ -72,6 +75,21 @@ std::string Pixel::Object::PhysicalObject::GetTexture() const
 	return "";
 }
 
+Pixel::TextureMode Pixel::Object::PhysicalObject::GetTextureMode() const
+{
+	return _textureMode;
+}
+
+float Pixel::Object::PhysicalObject::GetTextureRepeatX() const
+{
+	return _textureRepeatX;
+}
+
+float Pixel::Object::PhysicalObject::GetTextureRepeatY() const
+{
+	return _textureRepeatY;
+}
+
 void Pixel::Object::PhysicalObject::SetPosition(Pixel::Type::WorldPosition value)
 {
 	_position = value;
@@ -102,11 +120,49 @@ void Pixel::Object::PhysicalObject::SetColor(Pixel::Type::Color value)
 	_color = value;
 }
 
-void Pixel::Object::PhysicalObject::SetTexture(std::string filePath)
+void Pixel::Object::PhysicalObject::SetTexture(std::string path)
 {
-	Pixel::ContentId textureId = Pixel::ContentProvider::Singleton()->LoadTextureFile(filePath);
-	if (textureId != "")
+	if (path.substr(0, 4) == "http")
 	{
-		_texture = textureId;
+		//Texture is an online file
+		Pixel::ContentId textureId = Pixel::ContentProvider::Singleton()->LoadTextureWeb(path);
+		if (textureId != "")
+		{
+			_texture = textureId;
+		}
 	}
+	else
+	{
+		//Texture is a local file
+		Pixel::ContentId textureId = Pixel::ContentProvider::Singleton()->LoadTextureFile(path);
+		if (textureId != "")
+		{
+			_texture = textureId;
+		}
+	}
+}
+
+void Pixel::Object::PhysicalObject::SetTextureMode(Pixel::TextureMode textureMode)
+{
+	_textureMode = textureMode;
+}
+
+void Pixel::Object::PhysicalObject::SetTextureRepeatX(float value)
+{
+	_textureRepeatX = value;
+}
+
+void Pixel::Object::PhysicalObject::SetTextureRepeatY(float value)
+{
+	_textureRepeatY = value;
+}
+
+void Pixel::Object::PhysicalObject::SetTextureRepeat(float x, float y)
+{
+	SetTextureRepeatX(x);
+	SetTextureRepeatY(y);
+}
+void Pixel::Object::PhysicalObject::SetTextureRepeat(float xy)
+{
+	SetTextureRepeat(xy, xy);
 }

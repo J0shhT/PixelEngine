@@ -14,6 +14,7 @@
 #include "Include/PixelOutput.h"
 #include "Include/Core/PixelApp.h"
 #include "Include/Core/SceneManager.h"
+#include "Include/Core/SoundService.h"
 
 #include "Include/Object/RenderableObject.h"
 #include "Include/Object/BasicTextGui.h"
@@ -50,6 +51,9 @@ void Pixel::RenderService::Initialize()
 		PixelWarning("RenderService::Initialize() - RenderService is already initialized");
 		return;
 	}
+
+	glewExperimental = GL_TRUE;
+
 	if (glewInit() == GLEW_OK)
 	{
 		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info, "RenderService::Initialize() - GLEW initialized");
@@ -79,7 +83,6 @@ void Pixel::RenderService::Initialize()
 
 	//Link shaders
 	LinkShaders();
-
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -178,9 +181,9 @@ void Pixel::RenderService::RenderDebugGui()
 	glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
 	glBegin(GL_TRIANGLES);
 		glVertex2f(0.01f, 0.01f);
-		glVertex2f(0.01f, 0.35f);
-		glVertex2f(0.27f, 0.35f);
-		glVertex2f(0.27f, 0.35f);
+		glVertex2f(0.01f, 0.99f);
+		glVertex2f(0.27f, 0.99f);
+		glVertex2f(0.27f, 0.99f);
 		glVertex2f(0.27f, 0.01f);
 		glVertex2f(0.01f, 0.01f);
 	glEnd();
@@ -197,10 +200,10 @@ void Pixel::RenderService::RenderDebugGui()
 		"---- Physics ----",
 		//"Timing: " + std::string("(todo)"),
 		"Frame delta: " + std::to_string(lastPhysicsFrameDelta) + std::string("s"),
-		/*
 		"---- Sound ----",
-		"Timing: " + std::string("(todo)"),
-		"Playing: " + std::string("(todo)"),
+		//"Timing: " + std::string("(todo)"),
+		"Playing: " + std::to_string(Pixel::SoundService::Singleton()->GetTotalPlayingSounds()),
+		/*
 		"---- Events ----",
 		"Timing: " + std::string("(todo)"),
 		"Binded: " + std::string("(todo)"),
@@ -208,6 +211,10 @@ void Pixel::RenderService::RenderDebugGui()
 		"---- Game ----",
 		"Game Objects: " + std::to_string(Pixel::SceneManager::Singleton()->GetObjectCount()),
 		"GUI Objects: " + std::to_string(Pixel::GuiService::Singleton()->GetGuiObjectCount()),
+		"---- Content ----",
+		"Misc: " + std::to_string(Pixel::ContentProvider::Singleton()->GetStats()[Pixel::ContentType::Text]),
+		"Textures: " + std::to_string(Pixel::ContentProvider::Singleton()->GetStats()[Pixel::ContentType::Texture]),
+		"Sounds: " + std::to_string(Pixel::ContentProvider::Singleton()->GetStats()[Pixel::ContentType::Sound]),
 		/*
 		"---- Network ----",
 		"HTTP GET: " + std::string("(todo)"),

@@ -24,6 +24,19 @@
 #pragma warning(push)
 #pragma warning(disable: 4251)
 
+namespace Pixel
+{
+	/**
+	*  TODO
+	*/
+	enum class TextureMode
+	{
+		Stretch, //* The texture of the object is stretched to fit the object's size.
+		Repeat //* The texture is repeated on the object using the texture's image size.
+	};
+
+}
+
 namespace Pixel::Object {
 
 	/**
@@ -99,6 +112,21 @@ namespace Pixel::Object {
 			std::string GetTexture() const;
 
 			/**
+			*  TODO
+			*/
+			Pixel::TextureMode GetTextureMode() const;
+
+			/**
+			*  TODO
+			*/
+			float GetTextureRepeatX() const;
+
+			/**
+			*  TODO
+			*/
+			float GetTextureRepeatY() const;
+
+			/**
 			*  Sets the world position of this object.
 			*/
 			void SetPosition(Pixel::Type::WorldPosition);
@@ -131,10 +159,36 @@ namespace Pixel::Object {
 			void SetColor(Pixel::Type::Color);
 
 			/**
-			*  Sets the texture of this object from the given file path.
+			*  Sets the texture of this object from the given path.
+			*  The path can either by a local file OR a url to a valid image.
 			*  See Pixel::ContentProvider documentation for supported image files.
 			*/
-			void SetTexture(std::string filePath);
+			void SetTexture(std::string path);
+
+			/**
+			*  TODO
+			*/
+			void SetTextureMode(Pixel::TextureMode);
+
+			/**
+			*  TODO
+			*/
+			void SetTextureRepeatX(float);
+
+			/**
+			*  TODO
+			*/
+			void SetTextureRepeatY(float);
+
+			/**
+			*  TODO
+			*/
+			void SetTextureRepeat(float x, float y);
+
+			/**
+			*  TODO
+			*/
+			void SetTextureRepeat(float xy);
 
 			/**
 			*  Abstract function to step through one physics frame for this object.
@@ -152,6 +206,9 @@ namespace Pixel::Object {
 			bool _isSolid;
 			Pixel::Type::Color _color;
 			Pixel::ContentId _texture;
+			Pixel::TextureMode _textureMode;
+			float _textureRepeatX;
+			float _textureRepeatY;
 
 			bool _hasCollisionTop;
 			bool _hasCollisionBottom;

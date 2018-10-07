@@ -18,6 +18,7 @@
 #include "Include/Core/ContentProvider.h"
 #include "Include/Core/SoundService.h"
 #include "Include/Core/EventManager.h"
+#include "Include/Core/PlayerController.h"
 
 #include "Include/Graphics/RenderService.h"
 #include "Include/Graphics/GuiService.h"
@@ -45,6 +46,7 @@ Pixel::App::App(Pixel::WindowSubsystem subsystem) : _subsystem(subsystem)
 	new Pixel::SoundService();
 	new Pixel::UserInputService();
 	new Pixel::SceneManager();
+	new Pixel::PlayerController();
 	new Pixel::PhysicsService();
 	new Pixel::RenderService();
 	new Pixel::SelectionService();
@@ -58,6 +60,7 @@ Pixel::App::~App()
 	delete Pixel::SelectionService::Singleton();
 	delete Pixel::RenderService::Singleton();
 	delete Pixel::PhysicsService::Singleton();
+	delete Pixel::PlayerController::Singleton();
 	delete Pixel::SceneManager::Singleton();
 	delete Pixel::UserInputService::Singleton();
 	delete Pixel::SoundService::Singleton();
@@ -185,11 +188,15 @@ void Pixel::App::StepPhysics()
 
 	static Pixel::PhysicsService* physicsService = Pixel::PhysicsService::Singleton();
 	static Pixel::RenderService* renderService = Pixel::RenderService::Singleton();
+	static Pixel::PlayerController* playerController = Pixel::PlayerController::Singleton();
 
 	//Simulate game
 	physicsService->TimeFrame();
 	physicsService->SimulateWorldObjects();
 	physicsService->SimulateSystemObjects();
+
+	//Update player controller
+	playerController->Update();
 
 	//Update camera
 	renderService->GetCurrentCamera()->Update(physicsService->GetLastPhysicsFrameDelta());
@@ -490,11 +497,27 @@ HWND Pixel::App::GetWindowHandle() const
 
 void Pixel::ValidateEngineVersion(std::string version)
 {
-	if (version != PIXEL_ENGINE_VERSION_INTERNAL)
+	if (version == PIXEL_ENGINE_VERSION_INTERNAL)
 	{
-		throw Pixel::Exception::FatalError(
-			"This program was created using a version of Pixel Engine that is no longer compatible with the loaded PixelEngine.dll file. "
-			"Please upgrade the program to use version " PIXEL_ENGINE_VERSION_INTERNAL " of Pixel Engine."
-		);
+		return;
 	}
+
+	/*
+		
+		alpha 1.0 (0.1.0.0) is compatible with:
+			- alpha 1.1 (0.1.1.0)
+
+	*/
+	if (version == "0.1.0.0")
+	{
+		if (PIXEL_ENGINE_VERSION_INTERNAL == "0.1.1.0")
+		{
+			return;
+		}
+	}
+
+	throw Pixel::Exception::FatalError(
+		"This program was created using a version of Pixel Engine that is no longer compatible with the loaded PixelEngine.dll file. "
+		"Please upgrade the program to use version " PIXEL_ENGINE_VERSION_INTERNAL " of Pixel Engine."
+	);
 }

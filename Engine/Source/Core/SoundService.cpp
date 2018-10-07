@@ -36,7 +36,17 @@ void Pixel::SoundService::Update()
 
 void Pixel::SoundService::PlaySound(Pixel::Sound sound)
 {
-	Pixel::ContentId contentId = Pixel::ContentProvider::Singleton()->LoadSoundFile(sound.filePath);
+	Pixel::ContentId contentId;
+	if (sound.path.substr(0, 4) == "http")
+	{
+		//Sound is being loaded from online URL
+		contentId = Pixel::ContentProvider::Singleton()->LoadSoundWeb(sound.path);
+	}
+	else
+	{
+		//Sound is being loaded from a local file
+		contentId = Pixel::ContentProvider::Singleton()->LoadSoundFile(sound.path);
+	}
 	if (contentId != "")
 	{
 		auto soundContent = const_cast<Pixel::Content*>(Pixel::ContentProvider::Singleton()->Get(contentId));
@@ -46,6 +56,22 @@ void Pixel::SoundService::PlaySound(Pixel::Sound sound)
 			soundContent->fmodChannel->setVolume(sound.volume);
 		}
 	}
+}
+
+unsigned int Pixel::SoundService::GetTotalPlayingSounds() const
+{
+	unsigned int total = 0;
+	auto sounds = Pixel::ContentProvider::Singleton()->GetOfType(Pixel::ContentType::Sound);
+	for (auto iter = sounds.cbegin(); iter != sounds.cend(); iter++)
+	{
+		bool isPlaying = false;
+		(*iter)->fmodChannel->isPlaying(&isPlaying);
+		if (isPlaying)
+		{
+			total++;
+		}
+	}
+	return total;
 }
 
 FMOD::System* Pixel::SoundService::GetSoundSystem() const

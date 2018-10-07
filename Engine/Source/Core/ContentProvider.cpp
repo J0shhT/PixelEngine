@@ -13,6 +13,7 @@
 #include "Include/PixelError.h"
 
 #include "Include/Core/SoundService.h"
+#include "Include/Network/HttpService.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -57,6 +58,24 @@ bool Pixel::ContentProvider::DoesContentExist(Pixel::ContentId id)
 bool Pixel::ContentProvider::IsContentCached(std::string identifier)
 {
 	return _loadedContentCache.find(identifier) != _loadedContentCache.end();
+}
+
+std::map<Pixel::ContentType, unsigned int> Pixel::ContentProvider::GetStats() const
+{
+	std::map<Pixel::ContentType, unsigned int> stats = {
+		{ Pixel::ContentType::Null,			0 },
+		{ Pixel::ContentType::Text,			0 },
+		{ Pixel::ContentType::Texture,		0 },
+		{ Pixel::ContentType::Sound,		0 },
+	};
+
+	for (auto iter = _loadedContent.cbegin(); iter != _loadedContent.cend(); iter++)
+	{
+		assert(stats.find(iter->second->type) != stats.end());
+		stats[iter->second->type]++;
+	}
+
+	return stats;
 }
 
 void Pixel::ContentProvider::FreeContent(Pixel::ContentId id)
@@ -116,6 +135,21 @@ const Pixel::Content* const Pixel::ContentProvider::Get(Pixel::ContentId id)
 	}
 }
 
+std::vector<Pixel::Content*> Pixel::ContentProvider::GetOfType(Pixel::ContentType type)
+{
+	auto content = std::vector<Pixel::Content*>();
+
+	for (auto iter = _loadedContent.cbegin(); iter != _loadedContent.cend(); iter++)
+	{
+		if (type == iter->second->type)
+		{
+			content.push_back(iter->second);
+		}
+	}
+
+	return content;
+}
+
 Pixel::ContentId Pixel::ContentProvider::LoadTextFile(std::string filePath)
 {
 	std::string filePathRaw = filePath;
@@ -152,6 +186,57 @@ Pixel::ContentId Pixel::ContentProvider::LoadTextFile(std::string filePath)
 
 		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
 			("ContentProvider loaded content \"" + content->filePath + "\" with id \"" + content->id + "\"").c_str()
+		);
+
+		return content->id;
+	}
+
+	return std::string("");
+}
+
+Pixel::ContentId Pixel::ContentProvider::LoadTextWeb(std::string url, bool noCache)
+{
+	if (IsContentCached(url))
+	{
+		return _loadedContentCache.at(url);
+	}
+	else
+	{
+		Pixel::Content* content = new Pixel::Content();
+		content->type = ContentType::Text;
+		if (IsContentCached(url))
+		{
+			content->id = _loadedContentCache.at(url);
+		}
+		else
+		{
+			content->id = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+		}
+
+		Pixel::HttpResponse response = Pixel::HttpService::Singleton()->Get(url);
+		if (response.success && response.statusCode == 200)
+		{
+			content->fileContents = response.body;
+			content->url = url;
+		}
+		else
+		{
+			PixelError("ContentProvider failed to load content \"" + url + "\"");
+			return std::string("");
+		}
+
+		if (IsContentCached(url))
+		{
+			_loadedContent[content->id] = content;
+		}
+		else
+		{
+			_loadedContent.emplace(content->id, content);
+			_loadedContentCache.emplace(content->url, content->id);
+		}
+
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
+			("ContentProvider loaded content \"" + content->url + "\" with id \"" + content->id + "\"").c_str()
 		);
 
 		return content->id;
@@ -216,6 +301,83 @@ Pixel::ContentId Pixel::ContentProvider::LoadTextureFile(std::string filePath)
 	return std::string("");
 }
 
+Pixel::ContentId Pixel::ContentProvider::LoadTextureWeb(std::string url, bool noCache)
+{
+	if (IsContentCached(url) && !noCache)
+	{
+		return _loadedContentCache.at(url);
+	}
+	else
+	{
+		Pixel::Content* content = new Pixel::Content();
+		content->type = ContentType::Texture;
+		if (IsContentCached(url))
+		{
+			content->id = _loadedContentCache.at(url);
+		}
+		else
+		{
+			content->id = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+		}
+
+		Pixel::HttpResponse response = Pixel::HttpService::Singleton()->Get(url);
+		if (response.success && response.statusCode == 200)
+		{
+			const char* data = response.body.c_str();
+			size_t dataLength = response.body.size();
+
+			unsigned char* image;
+			if (image = SOIL_load_image_from_memory((const unsigned char*)data, dataLength, &content->width, &content->height, 0, SOIL_LOAD_RGBA))
+			{
+				glGenTextures(1, &content->glTextureId);
+				glBindTexture(GL_TEXTURE_2D, content->glTextureId);
+				glTexImage2D(
+					GL_TEXTURE_2D,
+					0,
+					GL_RGBA,
+					content->width,
+					content->height,
+					0,
+					GL_RGBA,
+					GL_UNSIGNED_BYTE,
+					image
+				);
+				SOIL_free_image_data(image);
+				content->url = url;
+			}
+			else
+			{
+				SOIL_free_image_data(image);
+				PixelError("ContentProvider failed to load content \"" + url + "\"");
+				return std::string("");
+			}
+		}
+		else
+		{
+			PixelError("ContentProvider failed to load content \"" + url + "\"");
+			return std::string("");
+		}
+
+		if (IsContentCached(url))
+		{
+			_loadedContent[content->id] = content;
+		}
+		else
+		{
+			_loadedContent.emplace(content->id, content);
+			_loadedContentCache.emplace(content->url, content->id);
+		}
+
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
+			("ContentProvider loaded content \"" + content->url + "\" with id \"" + content->id + "\"").c_str()
+		);
+
+		return content->id;
+	}
+
+	return std::string("");
+}
+
 Pixel::ContentId Pixel::ContentProvider::LoadSoundFile(std::string filePath)
 {
 	std::string filePathRaw = filePath;
@@ -254,6 +416,76 @@ Pixel::ContentId Pixel::ContentProvider::LoadSoundFile(std::string filePath)
 
 		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
 			("ContentProvider loaded content \"" + content->filePath + "\" with id \"" + content->id + "\"").c_str()
+		);
+
+		return content->id;
+	}
+
+	return std::string("");
+}
+
+Pixel::ContentId Pixel::ContentProvider::LoadSoundWeb(std::string url, bool noCache)
+{
+	if (IsContentCached(url) && !noCache)
+	{
+		return _loadedContentCache.at(url);
+	}
+	else
+	{
+		Pixel::Content* content = new Pixel::Content();
+		content->type = ContentType::Sound;
+		if (IsContentCached(url))
+		{
+			content->id = _loadedContentCache.at(url);
+		}
+		else
+		{
+			content->id = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+		}
+
+		Pixel::HttpResponse response = Pixel::HttpService::Singleton()->Get(url);
+		if (response.success && response.statusCode == 200)
+		{
+			FMOD::System* fmod = Pixel::SoundService::Singleton()->GetSoundSystem();
+			FMOD::Sound* sound;
+			FMOD::Channel* channel = 0;
+
+			FMOD_CREATESOUNDEXINFO soundInfo = { 0 };
+			soundInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+			soundInfo.length = response.body.size();
+
+			const char* data = response.body.c_str();
+			FMOD_RESULT result = fmod->createSound(data, FMOD_DEFAULT | FMOD_OPENMEMORY, &soundInfo, &sound);
+			if (result == FMOD_OK)
+			{
+				content->fmodSound = sound;
+				content->fmodChannel = channel;
+				content->url = url;
+			}
+			else
+			{
+				PixelError("ContentProvider failed to load content \"" + url + "\"");
+				return std::string("");
+			}
+		}
+		else
+		{
+			PixelError("ContentProvider failed to load content \"" + url + "\"");
+			return std::string("");
+		}
+
+		if (IsContentCached(url))
+		{
+			_loadedContent[content->id] = content;
+		}
+		else
+		{
+			_loadedContent.emplace(content->id, content);
+			_loadedContentCache.emplace(content->url, content->id);
+		}
+
+		Pixel::StandardOut::Singleton()->Print(Pixel::OutputType::Info,
+			("ContentProvider loaded content \"" + content->url + "\" with id \"" + content->id + "\"").c_str()
 		);
 
 		return content->id;

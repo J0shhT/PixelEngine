@@ -34,11 +34,15 @@ Pixel::CameraType Pixel::Object::Camera::GetCameraType() const
 
 Pixel::Type::WorldPosition Pixel::Object::Camera::GetPosition() const
 {
-	if (_cameraType == Pixel::CameraType::Attach)
+	if (GetCameraType() == Pixel::CameraType::Attach)
 	{
 		if (Pixel::Util::IsWeakPtrInitialized<Pixel::Object::PhysicalObject>(_target))
 		{
-			return GetTarget()->GetPosition();
+			auto target = _target.lock();
+			return PixelWorldPosition(
+				target->GetPosition().GetX() + (target->GetSize().GetWidth() / 2),
+				target->GetPosition().GetY() + (target->GetSize().GetHeight() / 2)
+			);
 		}
 	}
 	return _position;
@@ -108,12 +112,6 @@ void Pixel::Object::Camera::Update(double frameDelta)
 				cameraPosition.GetX() + (_speed * movementDirectionX * frameDelta),
 				cameraPosition.GetY() + (_speed * movementDirectionY * frameDelta)
 			));
-		}
-	}
-	else if (GetCameraType() == Pixel::CameraType::Attach)
-	{
-		if (Pixel::Util::IsWeakPtrInitialized<Pixel::Object::PhysicalObject>(_target)) {
-			SetPosition(GetTarget()->GetPosition());
 		}
 	}
 }

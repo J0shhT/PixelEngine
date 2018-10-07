@@ -12,8 +12,8 @@
 
 #define PIXEL_ENGINE
 #define PIXEL_ENGINE_BUILD "alpha"
-#define PIXEL_ENGINE_VERSION "0.1.0.0"
-#define PIXEL_ENGINE_VERSION_INTERNAL "0.1.0.0"
+#define PIXEL_ENGINE_VERSION "0.1.1.0"
+#define PIXEL_ENGINE_VERSION_INTERNAL "0.1.1.0"
 
 #define DEBUG_BUILD_FILE_DIR "J:/PixelEngine/Dev/Release/"
 

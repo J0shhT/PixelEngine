@@ -25,6 +25,7 @@
 #include "Include/Core/EventManager.h"
 #include "Include/Core/LogService.h"
 #include "Include/Core/PixelApp.h"
+#include "Include/Core/PlayerController.h"
 #include "Include/Core/SceneManager.h"
 #include "Include/Core/SelectionService.h"
 #include "Include/Core/SoundService.h"

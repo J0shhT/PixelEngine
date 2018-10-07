@@ -109,15 +109,46 @@ void Pixel::Object::Rectangle::Render()
 	};
 
 	//Texture
-	GLfloat texCoords[] = {
-		0.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f,
+	GLfloat texCoords[12];
+	if (GetTextureMode() == Pixel::TextureMode::Stretch)
+	{
+		/*
+			0.0f, 0.0f,
+			0.0f, 1.0f,
+			1.0f, 1.0f,
 
-		0.0f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f
-	};
+			0.0f, 0.0f,
+			1.0f, 1.0f,
+			1.0f, 0.0f
+		*/
+		texCoords[0] = 0.0f;
+		texCoords[1] = 0.0f;
+		texCoords[2] = 0.0f;
+		texCoords[3] = 1.0f;
+		texCoords[4] = 1.0f;
+		texCoords[5] = 1.0f;
+		texCoords[6] = 0.0f;
+		texCoords[7] = 0.0f;
+		texCoords[8] = 1.0f;
+		texCoords[9] = 1.0f;
+		texCoords[10] = 1.0f;
+		texCoords[11] = 0.0f;
+	}
+	else if (GetTextureMode() == Pixel::TextureMode::Repeat)
+	{
+		texCoords[0] = 0.0f;
+		texCoords[1] = 0.0f;
+		texCoords[2] = 0.0f;
+		texCoords[3] = _textureRepeatY;
+		texCoords[4] = _textureRepeatX;
+		texCoords[5] = _textureRepeatY;
+		texCoords[6] = 0.0f;
+		texCoords[7] = 0.0f;
+		texCoords[8] = _textureRepeatX;
+		texCoords[9] = _textureRepeatY;
+		texCoords[10] = _textureRepeatX;
+		texCoords[11] = 0.0f;
+	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	//GLfloat borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };

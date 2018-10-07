@@ -23,15 +23,17 @@ namespace Pixel {
 
 	/**
 	*  The Pixel::Sound struct is used to represent a playable sound.
-	*  See Pixel::ContentProvider::LoadSoundFile() documentation for more details.
+	*  Sounds can either be from a local file or from an online URL.
+	*  See ContentProvider::LoadSoundFile() or ContentProvider::::LoadSoundWeb() 
+	documentation for more details on sound loading.
 	*/
 	struct PIXEL_API Sound
 	{
-		Sound(std::string filePath):
-			filePath(filePath),
+		Sound(std::string path):
+			path(path),
 			volume(1.0f) { }
 
-		std::string filePath; //* The path to the sound file to play, loaded by ContentProvider.
+		std::string path; //* The path to the sound file to play, can be a local file location or URL.
 		float volume; //* The volume of the sound, 1.0f by default.
 	};
 
@@ -72,8 +74,13 @@ namespace Pixel {
 			void PlaySound(Pixel::Sound);
 
 			/**
+			*  Returns the total number of sounds currently playing.
+			*/
+			unsigned int GetTotalPlayingSounds() const;
+
+			/**
 			*  Returns a pointer to the FMOD System struct.
-			*  This function is mostly only for internal-usage.
+			*  This function is mostly only for internal usage.
 			*/
 			FMOD::System* GetSoundSystem() const;
 
